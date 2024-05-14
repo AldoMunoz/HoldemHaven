@@ -2,6 +2,7 @@
 const signInButton = document.getElementById('signInButton');
 const signInModalBtn = document.getElementById('signInModalBtn');
 const signInForm = document.getElementById('signInForm');
+const registerForm = document.getElementById('registerForm');
 const registerModalBtn = document.getElementById('registerModalBtn');
 const registerButton = document.getElementById('registerButton');
 
@@ -18,51 +19,102 @@ function openRegisterModal() {
 
 //Handles sign-in form submission
 function handleSignIn() {
-    //Get form input values
-    const name = document.getElementById('name').value;
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+    const loginPlayerRequest = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value
+    };
 
-    //TODO sign-in logic
+    fetch('/api/signIn', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginPlayerRequest)
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Data: ", data);
+            //TODO reload the page with the player logged in
+            if(data.success) {
+                updateHeaderUponSignIn(data.username, data.accountBalance);
 
-    //Close modal after sign-in
-    const signInModal = new bootstrap.Modal(document.getElementById('signInModal'));
-    signInModal.hide();
+                // Reset form fields
+                signInForm.reset();
 
-    //Reset form fields
-    signInForm.reset();
+                // Try to hide the modal
+                const signInModalElement = document.getElementById('signInModal');
+                const signInModal = bootstrap.Modal.getInstance(signInModalElement);
+                if (signInModal) {
+                    signInModal.hide();
+                } else {
+                    console.error('Modal instance not found');
+                }
+            }
+            else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            alert(error.message);  // Display any caught errors
+        });
 }
 
 
 //Handles register form submission
 function handleRegister() {
-    const player = {
+    const registerPlayerRequest = {
         firstName: document.getElementById('newFirstName').value,
         lastName: document.getElementById('newLastName').value,
         email: document.getElementById('newEmail').value,
         username: document.getElementById('newUsername').value,
-        password: document.getElementById('newPassword').value
+        password: document.getElementById('newPassword').value,
+        confirmPassword: document.getElementById('newConfirmPassword').value
     };
 
-    //Sends POST request to the Player Controller
     fetch('/api/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(player)
+        body: JSON.stringify(registerPlayerRequest)
     })
-        .then(response => {
-            if (response.ok) {
-                alert('Registration successful!');
+        .then(response => response.json())
+        .then(data => {
+            console.log("Data:", data);
+            if(data.success) {
+                //Close modal after sign-in
+                const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+                registerModal.hide();
+
+                //Reset form fields
+                registerForm.reset();
                 location.reload();
+                alert(data.message);
             }
             else {
-                return response.json().then(data => { throw new Error(data.message || 'Registration failed'); });
+                alert(data.message);
             }
         })
-        .catch(error => alert(error.message));
+        .catch(error => {
+            alert(error.message);  // Display any caught errors
+        });
 }
+
+function updateHeaderUponSignIn(username, accountBalance) {
+    const loginContainer = document.getElementById('loginContainer');
+    const userDisplay = document.getElementById('userDisplay');
+    const usernameDisplay = document.getElementById('usernameDisplay');
+    const balanceDisplay = document.getElementById('balanceDisplay');
+
+    // Update the username and balance
+    usernameDisplay.textContent = username;
+    balanceDisplay.textContent = accountBalance;
+
+    // Hide login/register buttons and show user info
+    loginContainer.style.display = 'none';
+    userDisplay.style.display = 'block';
+}
+
 
 //Event listeners
 signInButton.addEventListener('click', openSignInModal);

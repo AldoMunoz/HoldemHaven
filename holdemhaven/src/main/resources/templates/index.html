@@ -18,17 +18,21 @@
 -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
-
         <a class="navbar-brand" href="#">Hold'em Haven</a>
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
             <!-- Login and Register buttons -->
-            <form class="d-flex">
+            <div id="loginContainer">
                 <button class="btn btn-outline-success me-2" type="button" id="signInButton">Sign In</button>
                 <button class="btn btn-outline-primary" type="button" id="registerButton">Register</button>
-            </form>
+            </div>
+            <!-- User info display, hidden by default -->
+            <div id="userDisplay" class="navbar-text" style="display: none;">
+                Welcome, <span id="usernameDisplay"></span> - Balance: $<span id="balanceDisplay"></span>
+            </div>
         </div>
     </div>
 </nav>
+
 <!-- Sign In Modal -->
 <div class="modal fade" id="signInModal" tabindex="-1" aria-labelledby="signInModalLabel" aria-hidden="true">
     <div class="modal-dialog">
