@@ -22,7 +22,7 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/", "/home", "/api/register", "/api/signIn", "/styles/**", "/scripts/**", "/icons/**").permitAll()
+                        .requestMatchers("/", "/home", "/cashier", "/api/register", "/api/signIn", "/styles/**", "/scripts/**", "/icons/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(withDefaults())

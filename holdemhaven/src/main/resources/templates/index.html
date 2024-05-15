@@ -25,9 +25,16 @@
                 <button class="btn btn-outline-success me-2" type="button" id="signInButton">Sign In</button>
                 <button class="btn btn-outline-primary" type="button" id="registerButton">Register</button>
             </div>
-            <!-- User info display, hidden by default -->
-            <div id="userDisplay" class="navbar-text" style="display: none;">
-                Welcome, <span id="usernameDisplay"></span> - Balance: $<span id="balanceDisplay"></span>
+            <!-- Username display -->
+            <div id="usernameContainer" class="navbar-text" style="display: none;">
+                Welcome, <span id="usernameDisplay"></span>
+            </div>
+            <div id="balanceContainer" class="navbar-text ms-3" style="display: none;"> <!-- ms-3 adds margin to the left -->
+                Balance: $<span id="balanceDisplay"></span>
+            </div>
+            <!-- Cashier button -->
+            <div id="cashierButton" style="display: none;">
+                <a href="#" th:href="@{/cashier}" class="btn btn-primary ms-3">Cashier</a>
             </div>
         </div>
     </div>

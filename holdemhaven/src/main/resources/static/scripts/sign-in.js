@@ -36,7 +36,7 @@ function handleSignIn() {
             console.log("Data: ", data);
             //TODO reload the page with the player logged in
             if(data.success) {
-                updateHeaderUponSignIn(data.username, data.accountBalance);
+                updateHeaderUponSignIn(data.playerUsername, data.accountBalance);
 
                 // Reset form fields
                 signInForm.reset();
@@ -102,17 +102,23 @@ function handleRegister() {
 
 function updateHeaderUponSignIn(username, accountBalance) {
     const loginContainer = document.getElementById('loginContainer');
-    const userDisplay = document.getElementById('userDisplay');
+    const usernameContainer = document.getElementById('usernameContainer');
+    const balanceContainer = document.getElementById('balanceContainer');
     const usernameDisplay = document.getElementById('usernameDisplay');
     const balanceDisplay = document.getElementById('balanceDisplay');
+    const cashierButton = document.getElementById('cashierButton');
 
-    // Update the username and balance
+    //Update the username and balance
     usernameDisplay.textContent = username;
     balanceDisplay.textContent = accountBalance;
 
-    // Hide login/register buttons and show user info
+    //Hide login/register buttons
     loginContainer.style.display = 'none';
-    userDisplay.style.display = 'block';
+
+    //Show user info
+    usernameContainer.style.display = 'block';
+    balanceContainer.style.display = 'block';
+    cashierButton.style.display = 'block';
 }
 
 
