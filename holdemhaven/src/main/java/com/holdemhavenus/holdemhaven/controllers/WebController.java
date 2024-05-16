@@ -14,7 +14,10 @@ public class WebController {
     }
 
     @GetMapping("/cashier")
-    public String cashierPage() {
+    public String cashierPage(HttpSession session, Model model) {
+        // Retrieve user details from the session
+        model.addAttribute("username", session.getAttribute("username"));
+        model.addAttribute("accountBalance", session.getAttribute("accountBalance"));
         return "cashier";
     }
 }

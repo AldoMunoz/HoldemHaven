@@ -6,6 +6,7 @@ import com.holdemhavenus.holdemhaven.entities.Player;
 import com.holdemhavenus.holdemhaven.responseDTOs.LoginPlayerResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.RegisterPlayerResponse;
 import com.holdemhavenus.holdemhaven.services.PlayerService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +25,13 @@ public class PlayerController {
     }
 
     @PostMapping("/signIn")
-    public LoginPlayerResponse loginPlayer(@RequestBody LoginPlayerRequest request) {
-        return playerService.verifySignInCredentials(request);
+    public LoginPlayerResponse loginPlayer(@RequestBody LoginPlayerRequest request, HttpSession session) {
+        LoginPlayerResponse response = playerService.verifySignInCredentials(request);
+        if(response.isSuccess()) {
+            session.setAttribute("username", response.getPlayerUsername());
+            session.setAttribute("accountBalance", response.getAccountBalance());
+            System.out.println("success session attributes");
+        }
+        return response;
     }
 }
