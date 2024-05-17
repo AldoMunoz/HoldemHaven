@@ -1,10 +1,12 @@
 package com.holdemhavenus.holdemhaven.services;
 
 import com.holdemhavenus.holdemhaven.requestDTOs.LoginPlayerRequest;
+import com.holdemhavenus.holdemhaven.requestDTOs.MoneyTransferRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.RegisterPlayerRequest;
 import com.holdemhavenus.holdemhaven.entities.Player;
 import com.holdemhavenus.holdemhaven.repositories.PlayerRepository;
 import com.holdemhavenus.holdemhaven.responseDTOs.LoginPlayerResponse;
+import com.holdemhavenus.holdemhaven.responseDTOs.MoneyTransferResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.RegisterPlayerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -106,6 +108,25 @@ public class PlayerService {
         response.setSuccess(false);
         response.setMessage("Unsuccessful login. Try again.");
 
+        return response;
+    }
+    public MoneyTransferResponse verifyDeposit(MoneyTransferRequest request, String username) {
+        Player player = playerRepository.findByUsername(username);
+        MoneyTransferResponse response;
+
+        //check if deposit amount is between $10 and $25000, and if the player exists
+        if (request.getAmount().compareTo(BigDecimal.valueOf(10)) > 0 &&
+                request.getAmount().compareTo(BigDecimal.valueOf(25000)) < 0 &&
+                player != null) {
+
+            player.setAccountBalance(player.getAccountBalance().add(request.getAmount()));
+            playerRepository.save(player);
+
+            response = new MoneyTransferResponse(true, "Successful deposit", player.getAccountBalance());
+        }
+        else {
+            response = new MoneyTransferResponse(false, "Unsuccessful deposit. Double check the deposit requirements.");
+        }
         return response;
     }
 

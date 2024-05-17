@@ -1,9 +1,10 @@
 package com.holdemhavenus.holdemhaven.controllers;
 
 import com.holdemhavenus.holdemhaven.requestDTOs.LoginPlayerRequest;
+import com.holdemhavenus.holdemhaven.requestDTOs.MoneyTransferRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.RegisterPlayerRequest;
-import com.holdemhavenus.holdemhaven.entities.Player;
 import com.holdemhavenus.holdemhaven.responseDTOs.LoginPlayerResponse;
+import com.holdemhavenus.holdemhaven.responseDTOs.MoneyTransferResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.RegisterPlayerResponse;
 import com.holdemhavenus.holdemhaven.services.PlayerService;
 import jakarta.servlet.http.HttpSession;
@@ -25,12 +26,28 @@ public class PlayerController {
     }
 
     @PostMapping("/signIn")
-    public LoginPlayerResponse loginPlayer(@RequestBody LoginPlayerRequest request, HttpSession session) {
+    public LoginPlayerResponse signInPlayer(@RequestBody LoginPlayerRequest request, HttpSession session) {
         LoginPlayerResponse response = playerService.verifySignInCredentials(request);
         if(response.isSuccess()) {
             session.setAttribute("username", response.getPlayerUsername());
             session.setAttribute("accountBalance", response.getAccountBalance());
             System.out.println("success session attributes");
+        }
+        return response;
+    }
+
+    @PostMapping("/deposit")
+    public MoneyTransferResponse deposit(@RequestBody MoneyTransferRequest request, HttpSession session) {
+        //Get username
+        String playerUsername = (String) session.getAttribute("username");
+
+        //Handle case where user is not logged in
+        if (playerUsername == null)
+            return new MoneyTransferResponse(false, "User not logged in or session expired");
+
+        MoneyTransferResponse response = playerService.verifyDeposit(request, playerUsername);
+        if(response.isSuccess()) {
+            session.setAttribute("accountBalance", response.getAmount());
         }
         return response;
     }

@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class WebController {
+    @GetMapping("/")
+    public String homeRedirect() {
+        return "redirect:/start";
+    }
+
     @GetMapping("/start")
     public String startApp(HttpSession session, Model model){
         model.addAttribute("sessionId", session.getId());

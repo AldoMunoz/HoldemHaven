@@ -34,7 +34,6 @@ function handleSignIn() {
         .then(response => response.json())
         .then(data => {
             console.log("Data: ", data);
-            //TODO reload the page with the player logged in
             if(data.success) {
                 updateHeaderUponSignIn(data.playerUsername, data.accountBalance);
 
@@ -96,7 +95,7 @@ function handleRegister() {
             }
         })
         .catch(error => {
-            alert(error.message);  // Display any caught errors
+            alert(error.message);
         });
 }
 

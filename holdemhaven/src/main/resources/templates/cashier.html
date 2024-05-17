@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Holdem Haven</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="/styles/homePageStyles.css">
 </head>
 <body>
+<!-- Main Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Hold'em Haven</a>
@@ -26,15 +26,67 @@
         </div>
     </div>
 </nav>
-<!-- Second Navbar for Transactions -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light mt-5">
+
+<!-- Transaction Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <div class="navbar-nav">
-            <button class="btn btn-success me-2" type="button">Deposit</button>
-            <button class="btn btn-warning" type="button">Withdraw</button>
+            <button id="depositButton" class="btn btn-success me-2" type="button">Deposit</button>
+            <button id="withdrawButton" class="btn btn-warning" type="button">Withdraw</button>
         </div>
     </div>
 </nav>
+
+<!-- Deposit form -->
+<div id="depositForm" class="container mt-5" style="display: none;">
+    <div class="row justify-content-center">
+        <div class="col-8 col-md-4 d-flex flex-column justify-content-center align-items-center p-5 border border-secondary rounded">
+            <form>
+                <div class="mb-3">
+                    <label for="depositAmount" class="form-label fw-bold fs-5">Deposit Amount:</label>
+                    <input type="number" class="form-control" id="depositAmount" name="depositAmount" required placeholder="Enter amount in USD">
+                </div>
+                <button id="submitDepositButton "type="submit" class="btn btn-primary mt-5">Deposit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Deposit information -->
+<div id="depositInfo" class="container mt-5" style="display: none;">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <p class="text-muted tight-spacing">Minimum deposit amount: $10</p>
+            <p class="text-muted tight-spacing">Maximum deposit amount: $25,000</p>
+            <p class="text-muted tight-spacing">Fee: No fee</p>
+        </div>
+    </div>
+</div>
+
+<!-- Withdraw form -->
+<div id="withdrawForm" class="container mt-5" style="display: none;">
+    <div class="row justify-content-center">
+        <div class="col-8 col-md-4 d-flex flex-column justify-content-center align-items-center p-5 border border-secondary rounded">
+            <form>
+                <div class="mb-3">
+                    <label for="withdrawAmount" class="form-label fw-bold fs-5">Withdraw Amount:</label>
+                    <input type="number" class="form-control" id="withdrawAmount" name="withdrawAmount" required placeholder="Enter amount in USD">
+                </div>
+                <button id="submitWithdrawalButton" type="submit" class="btn btn-primary mt-5">Withdraw</button>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Withdraw information -->
+<div id="withdrawInfo" class="container mt-5" style="display: none;">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <p class="text-muted tight-spacing">There is no minimum withdraw amount.</p>
+            <p class="text-muted tight-spacing">Maximum withdraw amount: $10,000</p>
+            <p class="text-muted tight-spacing">Fee: No fee</p>
+        </div>
+    </div>
+</div>
 
 <!-- Footer -->
 <footer class="footer mt-auto py-3 bg-light">
