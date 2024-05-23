@@ -33,7 +33,7 @@
             </div>
             <!-- Cashier button -->
             <div id="cashierButton" style="display: none;">
-                <a href="#" th:href="@{/cashier}" class="btn btn-primary ms-3">Cashier</a>
+                <a href="#" class="btn btn-primary ms-3">Cashier</a>
             </div>
         </div>
     </div>
@@ -115,7 +115,7 @@
 <div class="center-container bg-light">
     <div class="text-center">
         <h1>Ultimate Texas Hold'em</h1>
-        <p>Your session ID: <span th:text="${sessionId}"></span></p>
+        <p>Your session ID: <span id="session-id">Loading...</span></p>
         <button class="btn btn-primary btn-lg">Play Now</button>
     </div>
 </div>

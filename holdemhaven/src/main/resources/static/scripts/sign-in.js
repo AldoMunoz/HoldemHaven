@@ -6,6 +6,23 @@ const registerForm = document.getElementById('registerForm');
 const registerModalBtn = document.getElementById('registerModalBtn');
 const registerButton = document.getElementById('registerButton');
 
+//Fetches session ID
+async function fetchSessionId() {
+    try {
+        const response = await fetch('/session-id');
+        if(response.ok) {
+            const sessionId = await response.text();
+            document.getElementById('session-id').textContent = sessionId;
+        }
+        else {
+            console.error("Failed to fetch session ID");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
+
+
 //Opens sign-in modal
 function openSignInModal() {
     const signInModal = new bootstrap.Modal(document.getElementById('signInModal'));
@@ -120,10 +137,11 @@ function updateHeaderUponSignIn(username, accountBalance) {
     cashierButton.style.display = 'block';
 }
 
-
 //Event listeners
 signInButton.addEventListener('click', openSignInModal);
 registerButton.addEventListener('click', openRegisterModal);
 signInModalBtn.addEventListener('click', handleSignIn);
 registerModalBtn.addEventListener('click', handleRegister)
+//Get session id when user opens the page
+window.onload = fetchSessionId;
 

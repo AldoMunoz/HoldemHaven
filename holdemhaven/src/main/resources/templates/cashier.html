@@ -14,14 +14,14 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
             <!-- Username display -->
             <div id="usernameContainer" class="navbar-text">
-                Welcome, <span th:text="${username}">Username</span>!</span>
+                Welcome!
             </div>
             <div id="balanceContainer" class="navbar-text ms-3">
-                Balance: $<span th:text="${accountBalance}">0</span>
+                Balance: $
             </div>
             <!-- Cashier button -->
             <div id="cashierButton">
-                <a href="#" th:href="@{/cashier}" class="btn btn-primary ms-3">Cashier</a>
+                <a class="btn btn-primary ms-3">Cashier</a>
             </div>
         </div>
     </div>
