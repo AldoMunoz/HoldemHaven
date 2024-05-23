@@ -62,8 +62,41 @@ function onSubmitDeposit() {
 }
 
 function onSubmitWithdrawal() {
-    const withdrawAmount = document.getElementById('withdrawAmount');
+    const withdrawAmount = document.getElementById('withdrawAmount').value;
 
+    const moneyTransferRequest = {
+        requestType: "WITHDRAW",
+        amount: withdrawAmount
+    };
+
+    console.log("Sending request:", moneyTransferRequest);
+
+    fetch('/api/withdraw', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(moneyTransferRequest),
+    })
+        .then(response => {
+            console.log("Received response:", response);
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Data received:", data);
+            if (data.success) {
+                alert('Withdraw successful');
+            } else {
+                alert('Withdraw failed: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+            alert(error.message);
+        });
 }
 
 depositButton.addEventListener('click', displayDepositForm);

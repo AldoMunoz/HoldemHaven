@@ -51,4 +51,18 @@ public class PlayerController {
         }
         return response;
     }
+
+    @PostMapping("/withdraw")
+    public MoneyTransferResponse withdraw(@RequestBody MoneyTransferRequest request, HttpSession session) {
+        String playerUsername = (String) session.getAttribute("username");
+
+        if(playerUsername == null)
+            return new MoneyTransferResponse(false, "User not logged in or session expired.");
+
+        MoneyTransferResponse response = playerService.verifyWithdrawal(request, playerUsername);
+        if(response.isSuccess())
+            session.setAttribute("accountBalance", response.getAmount());
+
+        return response;
+    }
 }

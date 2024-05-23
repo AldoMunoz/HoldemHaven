@@ -8,11 +8,14 @@ import com.holdemhavenus.holdemhaven.repositories.PlayerRepository;
 import com.holdemhavenus.holdemhaven.responseDTOs.LoginPlayerResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.MoneyTransferResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.RegisterPlayerResponse;
+import jakarta.transaction.Transactional;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,14 +113,16 @@ public class PlayerService {
 
         return response;
     }
+
+    @Transactional
     public MoneyTransferResponse verifyDeposit(MoneyTransferRequest request, String username) {
         Player player = playerRepository.findByUsername(username);
         MoneyTransferResponse response;
 
-        //check if deposit amount is between $10 and $25000, and if the player exists
-        if (request.getAmount().compareTo(BigDecimal.valueOf(10)) > 0 &&
-                request.getAmount().compareTo(BigDecimal.valueOf(25000)) < 0 &&
-                player != null) {
+        //check if the player exists, and if the deposit amount is between $10 and $25000
+        if (player != null &&
+                request.getAmount().compareTo(BigDecimal.valueOf(10)) > 0 &&
+                request.getAmount().compareTo(BigDecimal.valueOf(25000)) < 0) {
 
             player.setAccountBalance(player.getAccountBalance().add(request.getAmount()));
             playerRepository.save(player);
@@ -126,6 +131,28 @@ public class PlayerService {
         }
         else {
             response = new MoneyTransferResponse(false, "Unsuccessful deposit. Double check the deposit requirements.");
+        }
+        return response;
+    }
+
+    @Transactional
+    public MoneyTransferResponse verifyWithdrawal(MoneyTransferRequest request, String username) {
+        Player player = playerRepository.findByUsername(username);
+        MoneyTransferResponse response;
+
+        //check if the player exists, and if the withdrawal amount is greater than 0, less than 10000, and less than the player's account balance.
+        if (player != null &&
+                request.getAmount().compareTo(BigDecimal.valueOf(0)) > 0 &&
+                request.getAmount().compareTo(BigDecimal.valueOf(10000)) < 0 &&
+                request.getAmount().compareTo(player.getAccountBalance()) < 0) {
+
+            player.setAccountBalance(player.getAccountBalance().subtract(request.getAmount()));
+            playerRepository.save(player);
+
+            response = new MoneyTransferResponse(true, "Successful withdrawal", player.getAccountBalance());
+        }
+        else {
+            response = new MoneyTransferResponse(false, "Unsuccessful withdrawal. Double check the deposit requirements.");
         }
         return response;
     }
