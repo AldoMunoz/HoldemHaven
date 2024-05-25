@@ -99,7 +99,27 @@ function onSubmitWithdrawal() {
         });
 }
 
+async function fetchSessionAttributes() {
+    try {
+        const response = await fetch("/session-username-accBal");
+        if(response.ok) {
+            const attributes = await response.json();
+            document.getElementById('username').textContent = attributes.username;
+            document.getElementById('accountBalance').textContent = attributes.accountBalance.toFixed(2);
+        }
+        else {
+            console.error("Failed to fetch session attributes.");
+        }
+    }
+    catch (error) {
+        console.error("Error ", error);
+        document.getElementById('usernam')
+    }
+}
+
 depositButton.addEventListener('click', displayDepositForm);
 withdrawButton.addEventListener('click', displayWithdrawForm);
 submitDepositButton.addEventListener('click', onSubmitDeposit);
 submitWithdrawalButton.addEventListener('click', onSubmitWithdrawal);
+//Get username and chipCount when user opens the page
+window.onload = fetchSessionAttributes;

@@ -5,6 +5,7 @@ const signInForm = document.getElementById('signInForm');
 const registerForm = document.getElementById('registerForm');
 const registerModalBtn = document.getElementById('registerModalBtn');
 const registerButton = document.getElementById('registerButton');
+const cashierButton = document.getElementById('cashierButton');
 
 //Fetches session ID
 async function fetchSessionId() {
@@ -116,6 +117,20 @@ function handleRegister() {
         });
 }
 
+async function fetchCashierPage() {
+    try {
+        const response = await fetch("/cashier");
+        if(response.ok) {
+            console.log("Successfully fetched cashier page")
+        }
+        else {
+            console.error("Failed to fetch cashier page");
+        }
+    } catch (error ){
+        console.error("Error ", error);
+    }
+}
+
 function updateHeaderUponSignIn(username, accountBalance) {
     const loginContainer = document.getElementById('loginContainer');
     const usernameContainer = document.getElementById('usernameContainer');
@@ -141,7 +156,8 @@ function updateHeaderUponSignIn(username, accountBalance) {
 signInButton.addEventListener('click', openSignInModal);
 registerButton.addEventListener('click', openRegisterModal);
 signInModalBtn.addEventListener('click', handleSignIn);
-registerModalBtn.addEventListener('click', handleRegister)
+registerModalBtn.addEventListener('click', handleRegister);
+cashierButton.addEventListener('click', fetchCashierPage);
 //Get session id when user opens the page
 window.onload = fetchSessionId;
 

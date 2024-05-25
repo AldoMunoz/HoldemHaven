@@ -22,15 +22,14 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/", "/index.html", "/session-id", "/home", "/start", "/cashier", "/api/register", "/api/signIn", "/api/deposit", "/api/withdraw", "/styles/**", "/scripts/**", "/icons/**").permitAll()
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests(authz -> authz
+                        .anyRequest().permitAll()
                 )
-                .formLogin(withDefaults())
-                .httpBasic(withDefaults())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                );
+                )
+                .httpBasic(withDefaults());
+
         return http.build();
     }
 

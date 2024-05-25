@@ -23,6 +23,9 @@ public class SessionFilter implements Filter {
             session.setAttribute("sessionId", UUID.randomUUID().toString());
             System.out.println("Session ID generated and stored: " + sessionId);
         }
+        else {
+            System.out.println("Existing Session ID: " +  session.getAttribute("sessionId"));
+        }
 
         chain.doFilter(request, response);
     }
