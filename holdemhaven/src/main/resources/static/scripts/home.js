@@ -1,3 +1,4 @@
+
 //Get references to DOM elements
 const signInButton = document.getElementById('signInButton');
 const signInModalBtn = document.getElementById('signInModalBtn');
@@ -6,20 +7,32 @@ const registerForm = document.getElementById('registerForm');
 const registerModalBtn = document.getElementById('registerModalBtn');
 const registerButton = document.getElementById('registerButton');
 const cashierButton = document.getElementById('cashierButton');
+const logOutButton = document.getElementById('logOutButton');
 
 //Fetches session ID
-async function fetchSessionId() {
+async function fetchSessionInformation() {
     try {
-        const response = await fetch('/session-id');
+        const response = await fetch("/session-username-accBal");
         if(response.ok) {
-            const sessionId = await response.text();
-            document.getElementById('session-id').textContent = sessionId;
+            const attributes = await response.json();
+            if(attributes.username != null && attributes.accountBalance != null) {
+                document.getElementById('usernameDisplay').textContent = attributes.username;
+                document.getElementById('balanceDisplay').textContent = attributes.accountBalance.toFixed(2);
+
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('userInfoContainer').style.display = 'block';
+            }
+            else {
+                document.getElementById('loginContainer').style.display = 'block';
+                document.getElementById('userInfoContainer').style.setProperty('display', 'none', 'important');
+            }
         }
         else {
-            console.error("Failed to fetch session ID");
+            console.error("Failed to fetch session attributes.");
         }
-    } catch (error) {
-        console.error("Error:", error);
+    }
+    catch (error) {
+        console.error("Error ", error);
     }
 }
 
@@ -126,18 +139,16 @@ async function fetchCashierPage() {
         else {
             console.error("Failed to fetch cashier page");
         }
-    } catch (error ){
+    } catch (error){
         console.error("Error ", error);
     }
 }
 
 function updateHeaderUponSignIn(username, accountBalance) {
     const loginContainer = document.getElementById('loginContainer');
-    const usernameContainer = document.getElementById('usernameContainer');
-    const balanceContainer = document.getElementById('balanceContainer');
     const usernameDisplay = document.getElementById('usernameDisplay');
     const balanceDisplay = document.getElementById('balanceDisplay');
-    const cashierButton = document.getElementById('cashierButton');
+    const userInfoContainer = document.getElementById('userInfoContainer')
 
     //Update the username and balance
     usernameDisplay.textContent = username;
@@ -147,9 +158,28 @@ function updateHeaderUponSignIn(username, accountBalance) {
     loginContainer.style.display = 'none';
 
     //Show user info
-    usernameContainer.style.display = 'block';
-    balanceContainer.style.display = 'block';
-    cashierButton.style.display = 'block';
+    userInfoContainer.style.display = 'block';
+}
+
+async function handleLogOut() {
+    try {
+        const response = await fetch("/logout", {
+            method: 'POST',
+        });
+        if (response.ok) {
+            const result = await response.json().catch(() => ({}));
+            if(result.message) {
+                console.log(result.message());
+            }
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('userInfoContainer').style.setProperty('display', 'none', 'important');
+        }
+        else {
+            console.error("Failed to log out.");
+        }
+    } catch (error) {
+        console.log("Error: ", error);
+    }
 }
 
 //Event listeners
@@ -158,6 +188,7 @@ registerButton.addEventListener('click', openRegisterModal);
 signInModalBtn.addEventListener('click', handleSignIn);
 registerModalBtn.addEventListener('click', handleRegister);
 cashierButton.addEventListener('click', fetchCashierPage);
+logOutButton.addEventListener('click', handleLogOut);
 //Get session id when user opens the page
-window.onload = fetchSessionId;
+window.onload = fetchSessionInformation;
 

@@ -24,20 +24,22 @@
                 <button class="btn btn-outline-success me-2" type="button" id="signInButton">Sign In</button>
                 <button class="btn btn-outline-primary" type="button" id="registerButton">Register</button>
             </div>
-            <!-- Username display -->
-            <div id="usernameContainer" class="navbar-text" style="display: none;">
-                Welcome, <span id="usernameDisplay"></span>
-            </div>
-            <div id="balanceContainer" class="navbar-text ms-3" style="display: none;"> <!-- ms-3 adds margin to the left -->
-                Balance: $<span id="balanceDisplay"></span>
-            </div>
-            <!-- Cashier button -->
-            <div id="cashierButton" style="display: none;">
-                <a href="/cashier.html" class="btn btn-primary ms-3">Cashier</a>
-            </div>
-            <!-- Log out button -->
-            <div id="logOutButton" style="display: none;">
-                <a class="btn btn-primary ms-3">Cashier</a>
+            <div id="userInfoContainer" class="d-flex align-items-center">
+                <!-- Username display -->
+                <div id="usernameContainer" class="navbar-text">
+                    Welcome, <span id="usernameDisplay"></span>
+                </div>
+                <div id="balanceContainer" class="navbar-text ms-3">
+                    Balance: $<span id="balanceDisplay"></span>
+                </div>
+                <!-- Cashier button -->
+                <div id="cashierButton">
+                    <a href="/cashier.html" class="btn btn-primary ms-3">Cashier</a>
+                </div>
+                <!-- Log out button -->
+                <div id="logOutButton">
+                    <a class="btn btn-primary ms-3">Log Out</a>
+                </div>
             </div>
         </div>
     </div>
@@ -119,7 +121,6 @@
 <div class="center-container bg-light">
     <div class="text-center">
         <h1>Ultimate Texas Hold'em</h1>
-        <p>Your session ID: <span id="session-id">Loading...</span></p>
         <button id="playButton" class="btn btn-primary btn-lg">Play Now</button>
     </div>
 </div>
@@ -132,6 +133,6 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script src="/scripts/sign-in.js"></script>
+<script src="/scripts/home.js"></script>
 </body>
 </html>

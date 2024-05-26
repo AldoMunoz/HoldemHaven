@@ -10,4 +10,9 @@ public class ApplicationController {
     public String redirectToCashierPage() {
         return "redirect:/cashier.html";
     }
+
+    @GetMapping("/home")
+    public String redirectToHomePage() {
+        return "redirect:/index.html";
+    }
 }

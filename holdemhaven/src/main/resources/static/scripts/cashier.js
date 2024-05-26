@@ -6,6 +6,7 @@ const depositInfo = document.getElementById('depositInfo');
 const withdrawInfo = document.getElementById('withdrawInfo');
 const submitDepositButton = document.getElementById('submitDepositButton ');
 const submitWithdrawalButton = document.getElementById('submitWithdrawalButton');
+const homeButton = document.getElementById("homeButton");
 
 function displayDepositForm() {
     if(withdrawForm.style.display === 'block') {
@@ -113,7 +114,21 @@ async function fetchSessionAttributes() {
     }
     catch (error) {
         console.error("Error ", error);
-        document.getElementById('usernam')
+    }
+}
+
+async function fetchHomePage() {
+    try {
+        const response = await fetch("/home");
+        if(response.ok) {
+            console.log("Successfully fetched home page")
+            window.location.href = "/index.html";
+        }
+        else {
+            console.error("Failed to fetch home page");
+        }
+    } catch (error){
+        console.error("Error ", error);
     }
 }
 
@@ -121,5 +136,6 @@ depositButton.addEventListener('click', displayDepositForm);
 withdrawButton.addEventListener('click', displayWithdrawForm);
 submitDepositButton.addEventListener('click', onSubmitDeposit);
 submitWithdrawalButton.addEventListener('click', onSubmitWithdrawal);
+homeButton.addEventListener('click', fetchHomePage);
 //Get username and chipCount when user opens the page
 window.onload = fetchSessionAttributes;

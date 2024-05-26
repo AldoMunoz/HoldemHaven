@@ -25,6 +25,8 @@ public class SessionFilter implements Filter {
         }
         else {
             System.out.println("Existing Session ID: " +  session.getAttribute("sessionId"));
+            System.out.println(session.getAttribute("username"));
+            System.out.println(session.getAttribute("accountBalance"));
         }
 
         chain.doFilter(request, response);
