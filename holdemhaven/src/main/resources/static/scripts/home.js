@@ -1,5 +1,4 @@
-
-//Get references to DOM elements
+//References to DOM elements
 const signInButton = document.getElementById('signInButton');
 const signInModalBtn = document.getElementById('signInModalBtn');
 const signInForm = document.getElementById('signInForm');
@@ -8,8 +7,68 @@ const registerModalBtn = document.getElementById('registerModalBtn');
 const registerButton = document.getElementById('registerButton');
 const cashierButton = document.getElementById('cashierButton');
 const logOutButton = document.getElementById('logOutButton');
+const playButton = document.getElementById('playButton');
 
-//Fetches session ID
+document.addEventListener("DOMContentLoaded", function() {
+    const chips = document.querySelectorAll(".chip");
+    const dealButton = document.getElementById("deal-button");
+    const clearButton = document.getElementById("clear-button");
+    let selectedChipSrc = '';
+
+    //initialize bootstrap tooltips
+    chips.forEach(chip => {
+        new bootstrap.Tooltip(chip);
+    });
+
+    //handle chip selection
+    chips.forEach(chip => {
+        chip.addEventListener("click", function() {
+            document.querySelectorAll('.selected-chip').forEach(selectedChip => {
+                selectedChip.classList.remove('selected-chip');
+            });
+            this.classList.add('selected-chip');
+            selectedChipSrc = this.src;
+        });
+    });
+
+    //handle placing chip on ante area
+    document.getElementById("ante-area").addEventListener("click", function() {
+        if (selectedChipSrc) {
+            placeChip(this, selectedChipSrc);
+            placeChip(document.getElementById("dealer-area"), selectedChipSrc);
+            enableButtons();
+        }
+    });
+
+    //handle placing chip on dealer area
+    document.getElementById("dealer-area").addEventListener("click", function() {
+        if (selectedChipSrc) {
+            placeChip(this, selectedChipSrc);
+            placeChip(document.getElementById("ante-area"), selectedChipSrc);
+            enableButtons();
+        }
+    });
+
+    //places the chip on the table
+    function placeChip(area, src) {
+        // Remove any existing chip in the area
+        while (area.firstChild) {
+            area.removeChild(area.firstChild);
+        }
+        const chip = document.createElement("img");
+        chip.src = src;
+        chip.classList.add("placed-chip");
+        area.appendChild(chip);
+    }
+
+    //enables the "deal" and "clear" buttons
+    function enableButtons() {
+        dealButton.disabled = false;
+        clearButton.disabled = false;
+    }
+});
+
+//fetches the session ID
 async function fetchSessionInformation() {
     try {
         const response = await fetch("/session-username-accBal");
@@ -21,6 +80,8 @@ async function fetchSessionInformation() {
 
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('userInfoContainer').style.display = 'block';
+
+                document.getElementById('playButton').removeAttribute('disabled');
             }
             else {
                 document.getElementById('loginContainer').style.display = 'block';
@@ -37,18 +98,18 @@ async function fetchSessionInformation() {
 }
 
 
-//Opens sign-in modal
+//opens sign-in modal
 function openSignInModal() {
     const signInModal = new bootstrap.Modal(document.getElementById('signInModal'));
     signInModal.show();
 }
-//Opens register modal
+//opens register modal
 function openRegisterModal() {
     const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
     registerModal.show();
 }
 
-//Handles sign-in form submission
+//handles sign-in form submission
 function handleSignIn() {
     const loginPlayerRequest = {
         username: document.getElementById('username').value,
@@ -68,10 +129,10 @@ function handleSignIn() {
             if(data.success) {
                 updateHeaderUponSignIn(data.playerUsername, data.accountBalance);
 
-                // Reset form fields
+                //resets form fields
                 signInForm.reset();
 
-                // Try to hide the modal
+                //hides the modal
                 const signInModalElement = document.getElementById('signInModal');
                 const signInModal = bootstrap.Modal.getInstance(signInModalElement);
                 if (signInModal) {
@@ -79,18 +140,19 @@ function handleSignIn() {
                 } else {
                     console.error('Modal instance not found');
                 }
+
+                document.getElementById('playButton').removeAttribute('disabled');
             }
             else {
                 alert(data.message);
             }
         })
         .catch(error => {
-            alert(error.message);  // Display any caught errors
+            alert(error.message);
         });
 }
 
-
-//Handles register form submission
+//handles register form submission
 function handleRegister() {
     const registerPlayerRequest = {
         firstName: document.getElementById('newFirstName').value,
@@ -112,11 +174,11 @@ function handleRegister() {
         .then(data => {
             console.log("Data:", data);
             if(data.success) {
-                //Close modal after sign-in
+                //closes modal after sign-in
                 const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
                 registerModal.hide();
 
-                //Reset form fields
+                //resets form fields
                 registerForm.reset();
                 location.reload();
                 alert(data.message);
@@ -173,6 +235,7 @@ async function handleLogOut() {
             }
             document.getElementById('loginContainer').style.display = 'block';
             document.getElementById('userInfoContainer').style.setProperty('display', 'none', 'important');
+            document.getElementById('playButton').setAttribute('disabled', true);
         }
         else {
             console.error("Failed to log out.");
@@ -182,6 +245,12 @@ async function handleLogOut() {
     }
 }
 
+function openGame() {
+    document.getElementById('startGameContainer').style.display = 'none';
+
+    document.getElementById('gameContainer').style.display = 'block'
+}
+
 //Event listeners
 signInButton.addEventListener('click', openSignInModal);
 registerButton.addEventListener('click', openRegisterModal);
@@ -189,6 +258,7 @@ signInModalBtn.addEventListener('click', handleSignIn);
 registerModalBtn.addEventListener('click', handleRegister);
 cashierButton.addEventListener('click', fetchCashierPage);
 logOutButton.addEventListener('click', handleLogOut);
+playButton.addEventListener('click', openGame);
 //Get session id when user opens the page
 window.onload = fetchSessionInformation;
 

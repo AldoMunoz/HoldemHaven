@@ -119,9 +119,23 @@
 </div>
 <!-- Centered container with title and button -->
 <div class="center-container bg-light">
-    <div class="text-center">
+    <div id="startGameContainer" class="text-center">
         <h1>Ultimate Texas Hold'em</h1>
-        <button id="playButton" class="btn btn-primary btn-lg">Play Now</button>
+        <button id="playButton" class="btn btn-primary btn-lg" disabled>Play Now</button>
+    </div>
+    <div id="gameContainer" class="text-center" style="display: none;">
+        <img src="/images/uthtable.png" alt="Ultimate Texas Hold'em Table">
+        <div class="chip-container">
+            <img src="/images/chips/one_dollar_chip.png" alt="Image 1" class="chip" data-toggle="tooltip" title="Select">
+            <img src="/images/chips/five_dollar_chip.png" alt="Image 2" class="chip" data-toggle="tooltip" title="Select">
+            <img src="/images/chips/twenty_five_dollar_chip.png" alt="Image 3" class="chip" data-toggle="tooltip" title="Select">
+        </div>
+        <div class="button-container">
+            <button id="deal-button" class="btn btn-success btn-circle" disabled>Deal</button>
+            <button id="clear-button" class="btn btn-danger btn-circle" disabled>Clear</button>
+        </div>
+        <div id="ante-area" class="bet-area"></div>
+        <div id="dealer-area" class="bet-area"></div>
     </div>
 </div>
 <!-- Footer -->
