@@ -47,12 +47,6 @@ body {
     gap: 10px; /* Space between images */
 }
 
-.chip {
-    max-width: 10vh;
-    max-height: 10vh;
-    object-fit: cover;
-}
-
 .button-container {
     position: absolute;
     bottom: 10px;
@@ -78,6 +72,9 @@ body {
 }
 
 .chip {
+    max-width: 10vh;
+    max-height: 10vh;
+    object-fit: cover;
     transition: transform 0.3s ease;
     cursor: pointer;
 }
@@ -96,15 +93,27 @@ body {
     border-radius: 50%;
     width: 7vh;
     height: 7vh;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     cursor: pointer;
 }
 
+.flashing {
+    animation: flash 1s infinite;
+}
+@keyframes flash {
+    0%, 100% {
+        border-color: yellow;
+    }
+    50% {
+        border-color: white;
+    }
+}
+
 #ante-area {
     top: 59.5%;
-    left: 47.25%;
+    left: 47.5%;
     transform: translate(-50%, -50%);
 }
 
@@ -118,6 +127,10 @@ body {
     width: 50px;
     height: 50px;
     position: absolute;
+}
+
+.no-border {
+    border: none;
 }
 
 .tight-spacing {

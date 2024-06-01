@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", function() {
     const chips = document.querySelectorAll(".chip");
     const dealButton = document.getElementById("deal-button");
     const clearButton = document.getElementById("clear-button");
+    const anteArea = document.getElementById("ante-area");
+    const dealerArea = document.getElementById("dealer-area");
+
     let selectedChipSrc = '';
 
     //initialize bootstrap tooltips
@@ -28,23 +31,30 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             this.classList.add('selected-chip');
             selectedChipSrc = this.src;
+
+            anteArea.style.display = 'flex';
+            dealerArea.style.display = 'flex';
+            anteArea.classList.add('flashing');
+            dealerArea.classList.add('flashing');
         });
     });
 
     //handle placing chip on ante area
-    document.getElementById("ante-area").addEventListener("click", function() {
+    anteArea.addEventListener("click", function() {
         if (selectedChipSrc) {
             placeChip(this, selectedChipSrc);
-            placeChip(document.getElementById("dealer-area"), selectedChipSrc);
+            placeChip(dealerArea, selectedChipSrc);
+            hideBetAreaBorders();
             enableButtons();
         }
     });
 
     //handle placing chip on dealer area
-    document.getElementById("dealer-area").addEventListener("click", function() {
+    dealerArea.addEventListener("click", function() {
         if (selectedChipSrc) {
             placeChip(this, selectedChipSrc);
-            placeChip(document.getElementById("ante-area"), selectedChipSrc);
+            placeChip(anteArea, selectedChipSrc);
+            hideBetAreaBorders();
             enableButtons();
         }
     });
@@ -59,6 +69,14 @@ document.addEventListener("DOMContentLoaded", function() {
         chip.src = src;
         chip.classList.add("placed-chip");
         area.appendChild(chip);
+    }
+
+    //hides and stops flashing the ante and dealer areas
+    function hideBetAreaBorders() {
+        anteArea.classList.remove('flashing');
+        dealerArea.classList.remove('flashing');
+        anteArea.classList.add('no-border');
+        dealerArea.classList.add('no-border');
     }
 
     //enables the "deal" and "clear" buttons
