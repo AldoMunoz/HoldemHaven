@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const clearButton = document.getElementById("clear-button");
     const anteArea = document.getElementById("ante-area");
     const dealerArea = document.getElementById("dealer-area");
+    const tripsArea = document.getElementById("trips-area");
 
     let selectedChipSrc = '';
 
@@ -46,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
             placeChip(dealerArea, selectedChipSrc);
             hideBetAreaBorders();
             enableButtons();
+            showTripsArea();
         }
     });
 
@@ -56,7 +58,15 @@ document.addEventListener("DOMContentLoaded", function() {
             placeChip(anteArea, selectedChipSrc);
             hideBetAreaBorders();
             enableButtons();
+            showTripsArea();
         }
+    });
+
+    tripsArea.addEventListener('click', function() {
+       if(selectedChipSrc) {
+           placeChip(this, selectedChipSrc);
+           hideTripsAreaBorders();
+       }
     });
 
     //places the chip on the table
@@ -79,11 +89,43 @@ document.addEventListener("DOMContentLoaded", function() {
         dealerArea.classList.add('no-border');
     }
 
+    function hideTripsAreaBorders() {
+        tripsArea.classList.remove('flashing');
+        tripsArea.classList.add('no-border');
+    }
+
     //enables the "deal" and "clear" buttons
     function enableButtons() {
         dealButton.disabled = false;
         clearButton.disabled = false;
     }
+
+    //display trips area
+    function showTripsArea() {
+        tripsArea.style.display = 'flex';
+        tripsArea.classList.add('flashing');
+    }
+
+    function clearBets() {
+        tripsArea.innerHTML = '';
+        anteArea.innerHTML = '';
+        dealerArea.innerHTML = '';
+
+        tripsArea.classList.remove('no-border');
+        tripsArea.style.display = 'none';
+
+        anteArea.classList.remove('no-border');
+        anteArea.style.display = 'none';
+
+        dealerArea.classList.remove('no-border');
+        dealerArea.style.display = 'none';
+
+        document.querySelectorAll('.selected-chip').forEach(selectedChip => {
+            selectedChip.classList.remove('selected-chip');
+        });
+    }
+
+    clearButton.addEventListener('click', clearBets);
 });
 
 //fetches the session ID
