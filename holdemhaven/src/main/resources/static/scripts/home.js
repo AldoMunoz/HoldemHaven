@@ -17,6 +17,9 @@ document.addEventListener("DOMContentLoaded", function() {
     const dealerArea = document.getElementById("dealer-area");
     const tripsArea = document.getElementById("trips-area");
 
+
+    let anteBetAmount = 0;
+    let tripsBetAmount = 0;
     let selectedChipSrc = '';
 
     //initialize bootstrap tooltips
@@ -100,6 +103,12 @@ document.addEventListener("DOMContentLoaded", function() {
         clearButton.disabled = false;
     }
 
+    //disables the "deal" and "clear" buttons
+    function disableButtons() {
+        dealButton.disabled = true;
+        clearButton.disabled = true;
+    }
+
     //display trips area
     function showTripsArea() {
         tripsArea.style.display = 'flex';
@@ -123,9 +132,40 @@ document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll('.selected-chip').forEach(selectedChip => {
             selectedChip.classList.remove('selected-chip');
         });
+
+        disableButtons();
+    }
+
+    function dealHand() {
+        const dealHandRequest = {
+            anteBetAmount: anteArea,
+            tripsBetAmount: tripsBetAmount
+        }
+
+        fetch('/api/dealHand', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dealHandRequest)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Data: ", data);
+                if(data.success) {
+
+                }
+                else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
     }
 
     clearButton.addEventListener('click', clearBets);
+    dealButton.addEventListener('click', dealHand);
 });
 
 //fetches the session ID

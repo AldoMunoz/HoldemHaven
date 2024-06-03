@@ -1,12 +1,15 @@
 package com.holdemhavenus.holdemhaven.controllers;
 
+import com.holdemhavenus.holdemhaven.requestDTOs.DealHandRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.LoginPlayerRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.MoneyTransferRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.RegisterPlayerRequest;
+import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.LoginPlayerResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.MoneyTransferResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.RegisterPlayerResponse;
 import com.holdemhavenus.holdemhaven.services.PlayerService;
+import com.holdemhavenus.holdemhaven.services.TableService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlayerController {
     @Autowired
     private PlayerService playerService;
+    @Autowired
+    private TableService tableService;
 
     @PostMapping("/register")
     public RegisterPlayerResponse registerPlayer(@RequestBody RegisterPlayerRequest request) {
@@ -65,4 +70,24 @@ public class PlayerController {
 
         return response;
     }
+
+
+    @PostMapping("/dealHand")
+    public DealHandResponse dealHand(@RequestBody DealHandRequest request, HttpSession session) {
+        String playerUsername = (String) session.getAttribute("username");
+
+        if(playerUsername == null) {
+            return new DealHandResponse(false, "User not logged in or session expired.");
+        }
+
+        DealHandResponse response = playerService.verifyBet(request, playerUsername);
+
+        if(response.isSuccess()) {
+            //  DealHandResponse = table.service.dealHand();
+            return null;
+        }
+        else return response;
+    }
+
+
 }
