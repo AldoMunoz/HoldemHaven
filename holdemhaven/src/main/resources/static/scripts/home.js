@@ -7,7 +7,7 @@ const registerModalBtn = document.getElementById('registerModalBtn');
 const registerButton = document.getElementById('registerButton');
 const cashierButton = document.getElementById('cashierButton');
 const logOutButton = document.getElementById('logOutButton');
-const playButton = document.getElementById('playButton');
+const playNowButton = document.getElementById('playNowButton');
 
 document.addEventListener("DOMContentLoaded", function() {
     const chips = document.querySelectorAll(".chip");
@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let anteBetAmount = 0;
     let tripsBetAmount = 0;
     let selectedChipSrc = '';
+    let selectedChipValue = 0;
 
     //initialize bootstrap tooltips
     chips.forEach(chip => {
@@ -35,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             this.classList.add('selected-chip');
             selectedChipSrc = this.src;
+            selectedChipValue = this.getAttribute('data-value');
 
             anteArea.style.display = 'flex';
             dealerArea.style.display = 'flex';
@@ -45,9 +47,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     //handle placing chip on ante area
     anteArea.addEventListener("click", function() {
-        if (selectedChipSrc) {
-            placeChip(this, selectedChipSrc);
-            placeChip(dealerArea, selectedChipSrc);
+        if(selectedChipSrc) {
+            placeMainBet(selectedChipSrc);
             hideBetAreaBorders();
             enableButtons();
             showTripsArea();
@@ -56,9 +57,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     //handle placing chip on dealer area
     dealerArea.addEventListener("click", function() {
-        if (selectedChipSrc) {
-            placeChip(this, selectedChipSrc);
-            placeChip(anteArea, selectedChipSrc);
+        if(selectedChipSrc) {
+            placeMainBet(selectedChipSrc);
             hideBetAreaBorders();
             enableButtons();
             showTripsArea();
@@ -67,21 +67,35 @@ document.addEventListener("DOMContentLoaded", function() {
 
     tripsArea.addEventListener('click', function() {
        if(selectedChipSrc) {
-           placeChip(this, selectedChipSrc);
+           placeTripsBet(selectedChipSrc);
            hideTripsAreaBorders();
        }
     });
 
-    //places the chip on the table
-    function placeChip(area, src) {
+    //places the chip on the trips area
+    function placeTripsBet(src) {
         // Remove any existing chip in the area
-        while (area.firstChild) {
-            area.removeChild(area.firstChild);
+        while (tripsArea.firstChild) {
+            tripsArea.removeChild(tripsArea.firstChild);
         }
         const chip = document.createElement("img");
         chip.src = src;
         chip.classList.add("placed-chip");
-        area.appendChild(chip);
+        tripsArea.appendChild(chip);
+    }
+
+    //place chips on the dealer and ante areas
+    function placeMainBet(src) {
+        while(anteArea.firstChild) {
+            anteArea.removeChild(anteArea.firstChild);
+            dealerArea.removeChild(dealerArea.firstChild);
+        }
+        const chip = document.createElement("img");
+        chip.src = src;
+        chip.classList.add("placed-chip");
+
+        anteArea.appendChild(chip);
+        dealerArea.appendChild(chip);
     }
 
     //hides and stops flashing the ante and dealer areas
@@ -137,23 +151,22 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function dealHand() {
-        const dealHandRequest = {
-            anteBetAmount: anteArea,
+        const verifyBetRequest = {
+            anteBetAmount: anteBetAmount,
             tripsBetAmount: tripsBetAmount
         }
 
-        fetch('/api/dealHand', {
+        fetch('/api/verifyBet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(dealHandRequest)
+            body: JSON.stringify(verifyBetRequest)
         })
             .then(response => response.json())
             .then(data => {
                 console.log("Data: ", data);
                 if(data.success) {
-
                 }
                 else {
                     alert(data.message);
@@ -181,7 +194,7 @@ async function fetchSessionInformation() {
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('userInfoContainer').style.display = 'block';
 
-                document.getElementById('playButton').removeAttribute('disabled');
+                document.getElementById('playNowButton').removeAttribute('disabled');
             }
             else {
                 document.getElementById('loginContainer').style.display = 'block';
@@ -241,7 +254,7 @@ function handleSignIn() {
                     console.error('Modal instance not found');
                 }
 
-                document.getElementById('playButton').removeAttribute('disabled');
+                document.getElementById('playNowButton').removeAttribute('disabled');
             }
             else {
                 alert(data.message);
@@ -335,7 +348,7 @@ async function handleLogOut() {
             }
             document.getElementById('loginContainer').style.display = 'block';
             document.getElementById('userInfoContainer').style.setProperty('display', 'none', 'important');
-            document.getElementById('playButton').setAttribute('disabled', true);
+            document.getElementById('playNowButton').setAttribute('disabled', true);
         }
         else {
             console.error("Failed to log out.");
@@ -347,8 +360,30 @@ async function handleLogOut() {
 
 function openGame() {
     document.getElementById('startGameContainer').style.display = 'none';
+    document.getElementById('gameContainer').style.display = 'block';
 
-    document.getElementById('gameContainer').style.display = 'block'
+
+    //instantiate table in the back-end
+    fetch('/table/new-game', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log(data);
+            alert(data);
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
 }
 
 //Event listeners
@@ -358,7 +393,7 @@ signInModalBtn.addEventListener('click', handleSignIn);
 registerModalBtn.addEventListener('click', handleRegister);
 cashierButton.addEventListener('click', fetchCashierPage);
 logOutButton.addEventListener('click', handleLogOut);
-playButton.addEventListener('click', openGame);
+playNowButton.addEventListener('click', openGame);
 //Get session id when user opens the page
 window.onload = fetchSessionInformation;
 

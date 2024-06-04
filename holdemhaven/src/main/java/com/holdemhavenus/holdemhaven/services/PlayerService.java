@@ -1,23 +1,21 @@
 package com.holdemhavenus.holdemhaven.services;
 
-import com.holdemhavenus.holdemhaven.requestDTOs.DealHandRequest;
+import com.holdemhavenus.holdemhaven.requestDTOs.VerifyBetRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.LoginPlayerRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.MoneyTransferRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.RegisterPlayerRequest;
 import com.holdemhavenus.holdemhaven.entities.Player;
 import com.holdemhavenus.holdemhaven.repositories.PlayerRepository;
-import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
+import com.holdemhavenus.holdemhaven.responseDTOs.VerifyBetResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.LoginPlayerResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.MoneyTransferResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.RegisterPlayerResponse;
 import jakarta.transaction.Transactional;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -159,9 +157,9 @@ public class PlayerService {
         return response;
     }
 
-    public DealHandResponse verifyBet(DealHandRequest request, String username) {
+    public VerifyBetResponse verifyBet(VerifyBetRequest request, String username) {
         Player player = playerRepository.findByUsername(username);
-        DealHandResponse response;
+        VerifyBetResponse response;
 
         BigDecimal minRequiredAccountBalance = (request.getAnteBetAmount().multiply(BigDecimal.valueOf(3)).add(request.getTripsBetAmount()));
 
@@ -170,11 +168,11 @@ public class PlayerService {
             player.setAccountBalance(player.getAccountBalance().subtract(request.getAnteBetAmount().multiply(BigDecimal.valueOf(2)).add(request.getTripsBetAmount())));
             playerRepository.save(player);
 
-            response = new DealHandResponse(true, "Bet accepted. Deal hand.");
+            response = new VerifyBetResponse(true, "Bet accepted. Deal hand.");
             response.setAccountBalance(player.getAccountBalance());
         }
         else {
-            response = new DealHandResponse(false, "Bet not accepted. You need at least one bet equal to your dealer bet left in your account in order to play.");
+            response = new VerifyBetResponse(false, "Bet not accepted. You need at least one bet equal to your dealer bet left in your account in order to play.");
         }
         return response;
     }

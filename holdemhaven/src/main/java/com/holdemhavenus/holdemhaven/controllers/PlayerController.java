@@ -1,10 +1,10 @@
 package com.holdemhavenus.holdemhaven.controllers;
 
-import com.holdemhavenus.holdemhaven.requestDTOs.DealHandRequest;
+import com.holdemhavenus.holdemhaven.requestDTOs.VerifyBetRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.LoginPlayerRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.MoneyTransferRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.RegisterPlayerRequest;
-import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
+import com.holdemhavenus.holdemhaven.responseDTOs.VerifyBetResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.LoginPlayerResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.MoneyTransferResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.RegisterPlayerResponse;
@@ -72,22 +72,14 @@ public class PlayerController {
     }
 
 
-    @PostMapping("/dealHand")
-    public DealHandResponse dealHand(@RequestBody DealHandRequest request, HttpSession session) {
+    @PostMapping("/verifyBet")
+    public VerifyBetResponse verifyBet(@RequestBody VerifyBetRequest request, HttpSession session) {
         String playerUsername = (String) session.getAttribute("username");
 
         if(playerUsername == null) {
-            return new DealHandResponse(false, "User not logged in or session expired.");
+            return new VerifyBetResponse(false, "User not logged in or session expired.");
         }
 
-        DealHandResponse response = playerService.verifyBet(request, playerUsername);
-
-        if(response.isSuccess()) {
-            //  DealHandResponse = table.service.dealHand();
-            return null;
-        }
-        else return response;
+        return playerService.verifyBet(request, playerUsername);
     }
-
-
 }
