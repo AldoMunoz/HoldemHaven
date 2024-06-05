@@ -2,6 +2,7 @@ package com.holdemhavenus.holdemhaven.controllers;
 
 
 import com.holdemhavenus.holdemhaven.entities.Table;
+import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
 import com.holdemhavenus.holdemhaven.services.TableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +21,16 @@ public class TableController {
 
     @PostMapping("/new-game")
     public String startNewGame(@ModelAttribute("table") Table table) {
-        tableService.startNewGame(table);
-
         return "New game started";
     }
 
     @GetMapping
     public Table getTable(@ModelAttribute("table") Table table) {
         return table;
+    }
+
+    @PostMapping("/deal-hand")
+    public DealHandResponse dealHand(@ModelAttribute("table") Table table) {
+        return tableService.dealHoleCards(table);
     }
 }

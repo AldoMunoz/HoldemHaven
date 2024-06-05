@@ -164,7 +164,7 @@ public class PlayerService {
         BigDecimal minRequiredAccountBalance = (request.getAnteBetAmount().multiply(BigDecimal.valueOf(3)).add(request.getTripsBetAmount()));
 
         if(player != null &&
-                minRequiredAccountBalance.compareTo(player.getAccountBalance()) >= 0) {
+                minRequiredAccountBalance.compareTo(player.getAccountBalance()) <= 0) {
             player.setAccountBalance(player.getAccountBalance().subtract(request.getAnteBetAmount().multiply(BigDecimal.valueOf(2)).add(request.getTripsBetAmount())));
             playerRepository.save(player);
 

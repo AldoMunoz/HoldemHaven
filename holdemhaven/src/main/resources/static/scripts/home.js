@@ -82,20 +82,29 @@ document.addEventListener("DOMContentLoaded", function() {
         chip.src = src;
         chip.classList.add("placed-chip");
         tripsArea.appendChild(chip);
+        tripsBetAmount = selectedChipValue;
+        console.log(tripsBetAmount);
     }
 
     //place chips on the dealer and ante areas
     function placeMainBet(src) {
-        while(anteArea.firstChild) {
+        while(anteArea.firstChild ) {
             anteArea.removeChild(anteArea.firstChild);
             dealerArea.removeChild(dealerArea.firstChild);
         }
-        const chip = document.createElement("img");
-        chip.src = src;
-        chip.classList.add("placed-chip");
+        const anteChip = document.createElement("img");
+        anteChip.src = src;
+        anteChip.classList.add("placed-chip");
 
-        anteArea.appendChild(chip);
-        dealerArea.appendChild(chip);
+        const dealerChip = document.createElement("img");
+        dealerChip.src = src;
+        dealerChip.classList.add("placed-chip");
+
+        anteArea.appendChild(anteChip);
+        dealerArea.appendChild(dealerChip);
+
+        anteBetAmount = selectedChipValue;
+        console.log(anteBetAmount);
     }
 
     //hides and stops flashing the ante and dealer areas
@@ -148,6 +157,9 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         disableButtons();
+
+        anteBetAmount = 0;
+        tripsBetAmount = 0;
     }
 
     function dealHand() {
@@ -167,6 +179,33 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 console.log("Data: ", data);
                 if(data.success) {
+                    //update account balance
+                    document.getElementById('balanceDisplay').textContent = data.accountBalance.toFixed(2);
+
+                    //deal-cards
+                    fetch('/table/deal-hand', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.text();
+                        })
+                        .then(data => {
+                            console.log(data);
+                            //TODO display two hole cards, and dealer's hole cards
+
+                            displayDealerHoleCards();
+                            displayPlayerHoleCards(data.playerHoleCards);
+                        })
+                        .catch(error => {
+                            console.error('There was a problem with the fetch operation:', error);
+                        });
                 }
                 else {
                     alert(data.message);
@@ -175,6 +214,26 @@ document.addEventListener("DOMContentLoaded", function() {
             .catch(error => {
                 alert(error.message);
             });
+    }
+
+    function displayDealerHoleCards() {
+        const dealerHoleCardsDiv = document.querySelector('.dealer-hole-cards');
+        dealerHoleCardsDiv.innerHTML = `
+        <img src="/images/cards/card-back.png" alt="Card Back">
+        <img src="/images/cards/card-back.png" alt="Card Back">
+        `;
+    }
+
+    function displayPlayerHoleCards(holeCardsArray) {
+        //TODO condense?
+        const playerHoleCardsDiv = document.querySelector('.player-hole-cards');
+        const holeCard1 = `/images/cards/${holeCardsArray[0]}.png`;
+        const holeCard2 = `/images/cards/${holeCardsArray[1]}.png`;
+
+        playerHoleCardsDiv.innerHTML = `
+        <img src="${holeCard1}" alt="Hole Card 1">
+        <img src="${holeCard2}" alt="Hole Card 2">
+    `;
     }
 
     clearButton.addEventListener('click', clearBets);
@@ -379,7 +438,6 @@ function openGame() {
         })
         .then(data => {
             console.log(data);
-            alert(data);
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
