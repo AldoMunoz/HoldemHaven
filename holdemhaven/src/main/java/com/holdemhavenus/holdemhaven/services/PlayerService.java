@@ -177,6 +177,24 @@ public class PlayerService {
         return response;
     }
 
+    public VerifyBetResponse verifyPlay(BigDecimal playAmount, String username) {
+        Player player = playerRepository.findByUsername(username);
+        VerifyBetResponse response;
+
+        if(player != null &&
+                playAmount.compareTo(player.getAccountBalance()) <= 0) {
+            player.setAccountBalance(player.getAccountBalance().subtract(playAmount));
+            playerRepository.save(player);
+
+            response = new VerifyBetResponse(true, "Bet accepted. Runout hand.");
+            response.setAccountBalance(player.getAccountBalance());
+        }
+        else {
+            response = new VerifyBetResponse(false, "Bet not accepted. Insufficient funds.");
+        }
+        return response;
+    }
+
     //checks if email is valid, or if the email was already used to register an account
     private boolean isValidEmail(String email) {
         if (email == null || email.isEmpty()) return false;

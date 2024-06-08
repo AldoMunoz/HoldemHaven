@@ -1,9 +1,6 @@
 package com.holdemhavenus.holdemhaven.controllers;
 
-import com.holdemhavenus.holdemhaven.requestDTOs.VerifyBetRequest;
-import com.holdemhavenus.holdemhaven.requestDTOs.LoginPlayerRequest;
-import com.holdemhavenus.holdemhaven.requestDTOs.MoneyTransferRequest;
-import com.holdemhavenus.holdemhaven.requestDTOs.RegisterPlayerRequest;
+import com.holdemhavenus.holdemhaven.requestDTOs.*;
 import com.holdemhavenus.holdemhaven.responseDTOs.VerifyBetResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.LoginPlayerResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.MoneyTransferResponse;
@@ -17,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/api")
 public class PlayerController {
     @Autowired
     private PlayerService playerService;
-    @Autowired
-    private TableService tableService;
 
     @PostMapping("/register")
     public RegisterPlayerResponse registerPlayer(@RequestBody RegisterPlayerRequest request) {
@@ -43,8 +40,7 @@ public class PlayerController {
 
     @PostMapping("/deposit")
     public MoneyTransferResponse deposit(@RequestBody MoneyTransferRequest request, HttpSession session) {
-        //Get username
-        String playerUsername = (String) session.getAttribute("username");
+        String playerUsername = getUsername(session);
 
         //Handle case where user is not logged in
         if (playerUsername == null)
@@ -59,7 +55,7 @@ public class PlayerController {
 
     @PostMapping("/withdraw")
     public MoneyTransferResponse withdraw(@RequestBody MoneyTransferRequest request, HttpSession session) {
-        String playerUsername = (String) session.getAttribute("username");
+        String playerUsername = getUsername(session);
 
         if(playerUsername == null)
             return new MoneyTransferResponse(false, "User not logged in or session expired.");
@@ -74,12 +70,36 @@ public class PlayerController {
 
     @PostMapping("/verifyBet")
     public VerifyBetResponse verifyBet(@RequestBody VerifyBetRequest request, HttpSession session) {
-        String playerUsername = (String) session.getAttribute("username");
+        String playerUsername = getUsername(session);
 
         if(playerUsername == null) {
             return new VerifyBetResponse(false, "User not logged in or session expired.");
         }
 
-        return playerService.verifyBet(request, playerUsername);
+
+        VerifyBetResponse response = playerService.verifyBet(request, playerUsername);
+        if(response.isSuccess())
+            session.setAttribute("accountBalance", response.getAccountBalance());
+
+        return response;
+    }
+
+    @PostMapping("/verifyPlay")
+    public VerifyBetResponse verifyPlay(@RequestBody BigDecimal betAmount, HttpSession session) {
+        String playerUsername = getUsername(session);
+
+        if(playerUsername == null) {
+            return new VerifyBetResponse(false, "User not logged in or session expired.");
+        }
+
+        VerifyBetResponse response = playerService.verifyPlay(betAmount, playerUsername);
+        if(response.isSuccess())
+            session.setAttribute("accountBalance", response.getAccountBalance());
+
+        return response;
+    }
+
+    private String getUsername(HttpSession session) {
+        return (String) session.getAttribute("username");
     }
 }

@@ -11,20 +11,11 @@ const playNowButton = document.getElementById('playNowButton');
 
 document.addEventListener("DOMContentLoaded", function() {
     const chips = document.querySelectorAll(".chip");
-
     const dealButton = document.getElementById("deal-button");
     const clearButton = document.getElementById("clear-button");
-    //const fourXButton = document.getElementById("4x-button");
-    //const threeXButton = document.getElementById('3x-button');
-    //const twoXButton = document.getElementById('2x-button');
-    //const oneXButton = document.getElementById('1x-button');
-    //const checkButton = document.getElementById('check-button');
-    //const foldButton = document.getElementById('fold-button');
-
     const anteArea = document.getElementById("ante-area");
     const dealerArea = document.getElementById("dealer-area");
     const tripsArea = document.getElementById("trips-area");
-
 
     let anteBetAmount = 0;
     let tripsBetAmount = 0;
@@ -110,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function() {
         anteArea.appendChild(anteChip);
         dealerArea.appendChild(dealerChip);
 
-        anteBetAmount = selectedChipValue;
+        anteBetAmount = Number(selectedChipValue);
         console.log(anteBetAmount);
     }
 
@@ -184,10 +175,10 @@ document.addEventListener("DOMContentLoaded", function() {
         })
             .then(response => response.json())
             .then(data => {
-                console.log("Data: ", data);
+                console.log("Verify Bet Data: ", data);
                 if(data.success) {
                     //update account balance
-                    document.getElementById('balanceDisplay').textContent = data.accountBalance.toFixed(2);
+                    document.getElementById('balanceDisplay').textContent = data.accountBalance.toFixed(0);
 
                     //deal-cards
                     fetch('/table/deal-hand', {
@@ -243,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function() {
         `;
     }
 
-    function hideChips () {
+    function hideChips() {
         const chipContainer = document.querySelector('.chip-container');
         chipContainer.style.display = 'none';
     }
@@ -262,22 +253,166 @@ document.addEventListener("DOMContentLoaded", function() {
             <button id="check-button" class="btn btn-secondary btn-circle">Check</button>
         `;
 
-        document.getElementById("4x-button").addEventListener('click', placePlayBet(4));
-        document.getElementById("3x-button").addEventListener('click', placePlayBet(3));
+        document.getElementById("4x-button").addEventListener('click', function() {
+            placePlayBet(4)
+        });document.getElementById("3x-button").addEventListener('click', function() {
+            placePlayBet(3)
+        });
         document.getElementById("check-button").addEventListener('click', checkOption);
     }
 
-    function placePlayBet(betMultiplier) {
-        //get the bet on the ante area (1, 5, or 25)
+    function displayFlopBettingOptions() {
+        const buttonContainer = document.querySelector('.button-container');
+        buttonContainer.innerHTML = `
+            <button id="2x-button" class="btn btn-primary btn-circle">2x</button>
+            <button id="check-button" class="btn btn-secondary btn-circle">Check</button>
+        `;
 
-        //find the amount of 4x that bet and pass it to the controller
-        //check if user has sufficient funds
-        //if no error
-        //if yes,
-        //  display correct chips in the front end
-        //  update account balance
-        //  run out the board
-        // award winner etc. etc.
+        document.getElementById("2x-button").addEventListener('click', function() {
+            placePlayBet(2)
+        });
+        document.getElementById("check-button").addEventListener('click', checkOption);
+    }
+
+    function displayRiverBettingOptions() {
+        const buttonContainer = document.querySelector('.button-container');
+        buttonContainer.innerHTML = `
+            <button id="1x-button" class="btn btn-primary btn-circle">1x</button>
+            <button id="check-button" class="btn btn-secondary btn-circle">Fold</button>
+        `;
+
+        document.getElementById("1x-button").addEventListener('click', function() {
+            placePlayBet(1)
+        });
+        document.getElementById("check-button").addEventListener('click', foldHand);
+    }
+
+    //TODO create images of chip stacks
+    function displayPlayBet(chipCount) {
+        const playArea = document.querySelector('#play-area');
+        let chipImageSource;
+
+        if(anteBetAmount === 1) {
+            chipImageSource = "/images/chips/one_dollar_chip.png"
+        }
+        else if(anteBetAmount === 5) {
+            chipImageSource = "/images/chips/five_dollar_chip.png"
+
+        }
+        else if (anteBetAmount === 25) {
+            chipImageSource = "/images/chips/twenty_five_dollar_chip.png"
+
+        }
+        else {
+            console.error("Ante bet amount not set.")
+        }
+
+        playArea.style.display = 'flex';
+    }
+
+    function placePlayBet(betMultiplier) {
+        fetch('/api/verifyPlay', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(anteBetAmount*betMultiplier)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    //hide button container (probably need to rename that
+                    //display chips in front-end
+                    displayPlayBet(betMultiplier);
+                    document.querySelector('.button-container').style.display = 'none';
+
+                    const playerActionRequest = {
+                        action: 'B',
+                        betAmount: anteBetAmount*betMultiplier
+                    }
+
+                    fetch('/table/player-action', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(playerActionRequest)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+                            if(data.success) {
+                                runOutBoard(data.boardCards, data.street);
+                                setTimeout(() => {
+                                    revealDealerHoleCards(data.dealerHoleCards);
+                                }, 4000);
+                            }
+                            else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert(error.message);
+                        });
+                }
+                else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    }
+
+    function dealFlop(cards) {
+        const boardCardsDiv = document.querySelector('#board-cards-container');
+        const holeCard1 = `/images/cards/${cards[0]}.png`;
+        const holeCard2 = `/images/cards/${cards[1]}.png`;
+        const holeCard3 = `/images/cards/${cards[2]}.png`;
+
+        boardCardsDiv.innerHTML = `
+            <img src="${holeCard1}" alt="Hole Card 1" class="game-cards">
+            <img src="${holeCard2}" alt="Hole Card 2" class="game-cards">
+            <img src="${holeCard3}" alt="Hole Card 2" class="game-cards">
+        `;
+    }
+
+    function dealTurnAndRiver(cards) {
+        const boardCardsDiv = document.querySelector('#board-cards-container');
+        const holeCard1 = `/images/cards/${cards[0]}.png`;
+        const holeCard2 = `/images/cards/${cards[1]}.png`;
+
+        boardCardsDiv.insertAdjacentHTML('beforeend', `
+        <img src="${holeCard1}" alt="Hole Card 1" class="game-cards">
+        <img src="${holeCard2}" alt="Hole Card 2" class="game-cards">
+        `);
+    }
+
+    function runOutBoard(cards, street) {
+        if(street === "f") {
+            dealFlop(cards.slice(0, 3));
+            setTimeout(() => {
+                dealTurnAndRiver(cards.slice(3, 5));
+            }, 2000);
+
+        }
+        else if(street === "r") {
+            dealTurnAndRiver(cards);
+        }
+        else {
+            console.error("Street does not exist.");
+        }
+    }
+
+    function revealDealerHoleCards(cards) {
+        const dealerCardsDiv = document.querySelector('#dealer-cards-container');
+        const holeCard1 = `/images/cards/${cards[0]}.png`;
+        const holeCard2 = `/images/cards/${cards[1]}.png`;
+
+        dealerCardsDiv.innerHTML = `
+            <img src="${holeCard1}" alt="Hole Card 1" class="game-cards">
+            <img src="${holeCard2}" alt="Hole Card 2" class="game-cards">
+        `;
     }
 
     function checkOption() {
@@ -300,6 +435,14 @@ document.addEventListener("DOMContentLoaded", function() {
                     //TODO check street
                     //if flop do flop action function call
                     //if river do river action function call
+                    if(data.street === 'f') {
+                        dealFlop(data.boardCards);
+                        displayFlopBettingOptions();
+                    }
+                    else if(data.street === 'r') {
+                        dealTurnAndRiver(data.boardCards);
+                        displayRiverBettingOptions();
+                    }
                 }
                 else {
                     alert(data.message);
@@ -307,11 +450,15 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => {
                 alert(error.message);
+                //TODO restart game?
             });
     }
 
-    //twoXButton.addEventListener('click', placePlayBet(2));
-    //oneXButton.addEventListener('click', placePlayBet(1));
+    //TODO
+    function foldHand() {
+
+    }
+
     clearButton.addEventListener('click', clearBets);
     dealButton.addEventListener('click', dealHand);
 });

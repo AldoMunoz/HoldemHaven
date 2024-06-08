@@ -38,12 +38,15 @@ public class TableService {
     public PlayerActionResponse playerAction(Table table, PlayerActionRequest request) {
         PlayerActionResponse response = new PlayerActionResponse();
         if(table.getStreet().equals("preFlop")) {
+            response.setStreet('f');
             return preFlopAction(table, request, response);
         }
         else if(table.getStreet().equals("flop")) {
+            response.setStreet('r');
             return flopAction(table, request, response);
         }
         else if(table.getStreet().equals("river")) {
+            response.setStreet('e');
             return riverAction(table, request, response);
         }
         else {
@@ -63,8 +66,6 @@ public class TableService {
         else if (request.getAction() == 'C') {
             response.setSuccess(true);
             response.setMessage("Dealt flop.");
-            response.setStreet('f');
-
             table.setStreet("flop");
 
             return response;
@@ -85,7 +86,6 @@ public class TableService {
         else if (request.getAction() == 'C') {
             response.setSuccess(true);
             response.setMessage("Dealt turn and river.");
-            response.setStreet('r');
 
             table.setStreet("river");
 
@@ -98,13 +98,14 @@ public class TableService {
 
     private PlayerActionResponse riverAction(Table table, PlayerActionRequest request, PlayerActionResponse response) {
         if (request.getAction() == 'B') {
-            //TODO compareHands()
+            response.setDealerHoleCards(table.getDealerHoleCards());
+            response.setSuccess(true);
+            response.setMessage("Successful runout.");
             return response;
         }
         else if (request.getAction() == 'F') {
             response.setSuccess(true);
             response.setMessage("Folded hand.");
-            response.setStreet('e');
 
             table.setStreet("");
 

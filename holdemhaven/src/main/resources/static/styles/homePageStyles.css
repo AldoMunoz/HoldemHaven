@@ -109,6 +109,14 @@ body {
     gap: 1vh;
 }
 
+#board-cards-container {
+    position: absolute;
+    bottom: 76%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1vh;
+}
 
 .bet-area {
     position: absolute;
@@ -148,6 +156,12 @@ body {
 
 #trips-area {
     top: 48%;
+    left: 47.5%;
+    transform: translate(-50%, -50%);
+}
+
+#play-area {
+    top: 67.5%;
     left: 47.5%;
     transform: translate(-50%, -50%);
 }
