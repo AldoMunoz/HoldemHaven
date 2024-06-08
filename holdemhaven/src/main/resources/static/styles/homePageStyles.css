@@ -87,6 +87,29 @@ body {
     transform: scale(1.2);
 }
 
+.game-cards {
+    max-width: 9vh;
+    max-height: 9vh;
+}
+
+#player-cards-container {
+    position: absolute;
+    bottom: 23.3%;
+    left: 54.5%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1vh;
+}
+
+#dealer-cards-container {
+    position: absolute;
+    top: 9%;
+    right: 27%;
+    display: flex;
+    gap: 1vh;
+}
+
+
 .bet-area {
     position: absolute;
     border: 2px dashed #ccc;

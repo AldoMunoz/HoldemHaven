@@ -2,44 +2,116 @@ package com.holdemhavenus.holdemhaven.services;
 
 import com.holdemhavenus.holdemhaven.entities.Card;
 import com.holdemhavenus.holdemhaven.entities.Deck;
+import com.holdemhavenus.holdemhaven.entities.Player;
 import com.holdemhavenus.holdemhaven.entities.Table;
+import com.holdemhavenus.holdemhaven.requestDTOs.PlayerActionRequest;
 import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
+import com.holdemhavenus.holdemhaven.responseDTOs.PlayerActionResponse;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TableService {
-    private Table table;
-    private DeckService deckService;
-    private Deck deck;
-
-    public TableService() {
-        this.table = new Table();
-        this.deckService = new DeckService();
-        this.deck = new Deck();
-    }
-
     public Table getTable() {
         return new Table();
-    }
-
-    public void startNewGame(Table table) {
-        //todo
     }
 
 
     //draws 4 cards from the deck, deals 2 to the player and 2 to the dealer
     public DealHandResponse dealHoleCards(Table table) {
-        deckService.shuffleCards(deck);
+        table.getDeckService().shuffleCards(table.getDeck());
         //deal two cards to the player
-        table.getPlayerHoleCards().add(deckService.drawCard(deck));
-        table.getPlayerHoleCards().add(deckService.drawCard(deck));
+        table.getPlayerHoleCards().add(table.getDeckService().drawCard(table.getDeck()));
+        table.getPlayerHoleCards().add(table.getDeckService().drawCard(table.getDeck()));
 
         //deal two cards to the dealer
-        table.getDealerHoleCards().add(deckService.drawCard(deck));
-        table.getDealerHoleCards().add(deckService.drawCard(deck));
+        table.getDealerHoleCards().add(table.getDeckService().drawCard(table.getDeck()));
+        table.getDealerHoleCards().add(table.getDeckService().drawCard(table.getDeck()));
+
+        //set the current street to pre-flop
+        table.setStreet("preFlop");
 
         //send the player cards back to the front-end
         DealHandResponse response = new DealHandResponse(table.getPlayerHoleCards());
         return response;
+    }
+
+    public PlayerActionResponse playerAction(Table table, PlayerActionRequest request) {
+        PlayerActionResponse response = new PlayerActionResponse();
+        if(table.getStreet().equals("preFlop")) {
+            return preFlopAction(table, request, response);
+        }
+        else if(table.getStreet().equals("flop")) {
+            return flopAction(table, request, response);
+        }
+        else if(table.getStreet().equals("river")) {
+            return riverAction(table, request, response);
+        }
+        else {
+            return new PlayerActionResponse(false, "Error occurred, street not set properly.");
+        }
+    }
+
+    private PlayerActionResponse preFlopAction(Table table, PlayerActionRequest request, PlayerActionResponse response) {
+        //deal flop
+        response.getBoardCards().add(table.getDeckService().drawCard(table.getDeck()));
+        response.getBoardCards().add(table.getDeckService().drawCard(table.getDeck()));
+        response.getBoardCards().add(table.getDeckService().drawCard(table.getDeck()));
+
+        if (request.getAction() == 'B') {
+            return flopAction(table, request, response);
+        }
+        else if (request.getAction() == 'C') {
+            response.setSuccess(true);
+            response.setMessage("Dealt flop.");
+            response.setStreet('f');
+
+            table.setStreet("flop");
+
+            return response;
+        }
+        else {
+            return new PlayerActionResponse(false, "Error, action not identifiable.");
+        }
+    }
+
+    private PlayerActionResponse flopAction(Table table, PlayerActionRequest request, PlayerActionResponse response) {
+        //deal turn and river
+        response.getBoardCards().add(table.getDeckService().drawCard(table.getDeck()));
+        response.getBoardCards().add(table.getDeckService().drawCard(table.getDeck()));
+
+        if (request.getAction() == 'B') {
+            return riverAction(table, request, response);
+        }
+        else if (request.getAction() == 'C') {
+            response.setSuccess(true);
+            response.setMessage("Dealt turn and river.");
+            response.setStreet('r');
+
+            table.setStreet("river");
+
+            return response;
+        }
+        else {
+            return new PlayerActionResponse(false, "Error, action not identifiable.");
+        }
+    }
+
+    private PlayerActionResponse riverAction(Table table, PlayerActionRequest request, PlayerActionResponse response) {
+        if (request.getAction() == 'B') {
+            //TODO compareHands()
+            return response;
+        }
+        else if (request.getAction() == 'F') {
+            response.setSuccess(true);
+            response.setMessage("Folded hand.");
+            response.setStreet('e');
+
+            table.setStreet("");
+
+            return response;
+        }
+        else {
+            return new PlayerActionResponse(false, "Error, action not identifiable.");
+        }
     }
 }

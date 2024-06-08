@@ -11,8 +11,16 @@ const playNowButton = document.getElementById('playNowButton');
 
 document.addEventListener("DOMContentLoaded", function() {
     const chips = document.querySelectorAll(".chip");
+
     const dealButton = document.getElementById("deal-button");
     const clearButton = document.getElementById("clear-button");
+    //const fourXButton = document.getElementById("4x-button");
+    //const threeXButton = document.getElementById('3x-button');
+    //const twoXButton = document.getElementById('2x-button');
+    //const oneXButton = document.getElementById('1x-button');
+    //const checkButton = document.getElementById('check-button');
+    //const foldButton = document.getElementById('fold-button');
+
     const anteArea = document.getElementById("ante-area");
     const dealerArea = document.getElementById("dealer-area");
     const tripsArea = document.getElementById("trips-area");
@@ -31,9 +39,8 @@ document.addEventListener("DOMContentLoaded", function() {
     //handle chip selection
     chips.forEach(chip => {
         chip.addEventListener("click", function() {
-            document.querySelectorAll('.selected-chip').forEach(selectedChip => {
-                selectedChip.classList.remove('selected-chip');
-            });
+            deselectChip();
+
             this.classList.add('selected-chip');
             selectedChipSrc = this.src;
             selectedChipValue = this.getAttribute('data-value');
@@ -188,20 +195,21 @@ document.addEventListener("DOMContentLoaded", function() {
                         headers: {
                             'Content-Type': 'application/json'
                         },
+
                         body: JSON.stringify({})
                     })
                         .then(response => {
                             if (!response.ok) {
                                 throw new Error('Network response was not ok');
                             }
-                            return response.text();
+                            return response.json();
                         })
                         .then(data => {
-                            console.log(data);
-                            //TODO display two hole cards, and dealer's hole cards
-
                             displayDealerHoleCards();
                             displayPlayerHoleCards(data.playerHoleCards);
+                            hideChips();
+                            hideTripsAreaBorders();
+                            displayPreFlopBettingOptions();
                         })
                         .catch(error => {
                             console.error('There was a problem with the fetch operation:', error);
@@ -217,25 +225,93 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function displayDealerHoleCards() {
-        const dealerHoleCardsDiv = document.querySelector('.dealer-hole-cards');
+        const dealerHoleCardsDiv = document.querySelector('#dealer-cards-container');
         dealerHoleCardsDiv.innerHTML = `
-        <img src="/images/cards/card-back.png" alt="Card Back">
-        <img src="/images/cards/card-back.png" alt="Card Back">
+            <img src="/images/cards/card-back.png" alt="Card Back" class="game-cards">
+            <img src="/images/cards/card-back.png" alt="Card Back" class="game-cards">
         `;
     }
 
     function displayPlayerHoleCards(holeCardsArray) {
-        //TODO condense?
-        const playerHoleCardsDiv = document.querySelector('.player-hole-cards');
+        const playerHoleCardsDiv = document.querySelector('#player-cards-container');
         const holeCard1 = `/images/cards/${holeCardsArray[0]}.png`;
         const holeCard2 = `/images/cards/${holeCardsArray[1]}.png`;
 
         playerHoleCardsDiv.innerHTML = `
-        <img src="${holeCard1}" alt="Hole Card 1">
-        <img src="${holeCard2}" alt="Hole Card 2">
-    `;
+            <img src="${holeCard1}" alt="Hole Card 1" class="game-cards">
+            <img src="${holeCard2}" alt="Hole Card 2" class="game-cards">
+        `;
     }
 
+    function hideChips () {
+        const chipContainer = document.querySelector('.chip-container');
+        chipContainer.style.display = 'none';
+    }
+
+    function deselectChip() {
+        document.querySelectorAll('.selected-chip').forEach(selectedChip => {
+            selectedChip.classList.remove('selected-chip');
+        });
+    }
+
+    function displayPreFlopBettingOptions() {
+        const buttonContainer = document.querySelector('.button-container');
+        buttonContainer.innerHTML = `
+            <button id="4x-button" class="btn btn-primary btn-circle">4x</button>
+            <button id="3x-button" class="btn btn-primary btn-circle">3x</button>
+            <button id="check-button" class="btn btn-secondary btn-circle">Check</button>
+        `;
+
+        document.getElementById("4x-button").addEventListener('click', placePlayBet(4));
+        document.getElementById("3x-button").addEventListener('click', placePlayBet(3));
+        document.getElementById("check-button").addEventListener('click', checkOption);
+    }
+
+    function placePlayBet(betMultiplier) {
+        //get the bet on the ante area (1, 5, or 25)
+
+        //find the amount of 4x that bet and pass it to the controller
+        //check if user has sufficient funds
+        //if no error
+        //if yes,
+        //  display correct chips in the front end
+        //  update account balance
+        //  run out the board
+        // award winner etc. etc.
+    }
+
+    function checkOption() {
+        const playerActionRequest = {
+            action: 'C',
+            betAmount: 0
+        }
+
+        fetch('/table/player-action', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(playerActionRequest)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if(data.success) {
+                    //TODO check street
+                    //if flop do flop action function call
+                    //if river do river action function call
+                }
+                else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    }
+
+    //twoXButton.addEventListener('click', placePlayBet(2));
+    //oneXButton.addEventListener('click', placePlayBet(1));
     clearButton.addEventListener('click', clearBets);
     dealButton.addEventListener('click', dealHand);
 });

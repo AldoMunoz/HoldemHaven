@@ -2,7 +2,9 @@ package com.holdemhavenus.holdemhaven.controllers;
 
 
 import com.holdemhavenus.holdemhaven.entities.Table;
+import com.holdemhavenus.holdemhaven.requestDTOs.PlayerActionRequest;
 import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
+import com.holdemhavenus.holdemhaven.responseDTOs.PlayerActionResponse;
 import com.holdemhavenus.holdemhaven.services.TableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,5 +34,12 @@ public class TableController {
     @PostMapping("/deal-hand")
     public DealHandResponse dealHand(@ModelAttribute("table") Table table) {
         return tableService.dealHoleCards(table);
+    }
+
+    @PostMapping("/player-action")
+    public PlayerActionResponse playerAction(@ModelAttribute("table") Table table, @RequestBody PlayerActionRequest request) {
+        System.out.println(request.getAction());
+        System.out.println(request.getBetAmount());
+        return tableService.playerAction(table, request);
     }
 }
