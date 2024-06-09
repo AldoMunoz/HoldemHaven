@@ -287,26 +287,28 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("check-button").addEventListener('click', foldHand);
     }
 
-    //TODO create images of chip stacks
     function displayPlayBet(chipCount) {
         const playArea = document.querySelector('#play-area');
         let chipImageSource;
 
         if(anteBetAmount === 1) {
-            chipImageSource = "/images/chips/one_dollar_chip.png"
+            chipImageSource = `/images/chip-stacks/${chipCount}x_one_dollar_chip.png`;
         }
         else if(anteBetAmount === 5) {
-            chipImageSource = "/images/chips/five_dollar_chip.png"
-
+            chipImageSource = `/images/chip-stacks/${chipCount}x_five_dollar_chip.png`;
         }
         else if (anteBetAmount === 25) {
-            chipImageSource = "/images/chips/twenty_five_dollar_chip.png"
-
+            chipImageSource = `/images/chip-stacks/${chipCount}x_twenty_five_dollar_chip.png`;
         }
         else {
             console.error("Ante bet amount not set.")
         }
 
+        playArea.innerHTML = `
+            <img src="${chipImageSource}" alt="Play Chip" class="placed-chip" id="play-area">
+        `
+
+        playArea.classList.add('no-border');
         playArea.style.display = 'flex';
     }
 
