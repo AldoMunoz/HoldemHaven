@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     let anteBetAmount = 0;
     let tripsBetAmount = 0;
+    let playBetAmount = 0;
     let selectedChipSrc = '';
     let selectedChipValue = 0;
 
@@ -323,6 +324,8 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 if(data.success) {
+                    //set Play Bet Amount
+                    playBetAmount = anteBetAmount*betMultiplier;
                     //hide button container (probably need to rename that
                     //display chips in front-end
                     displayPlayBet(betMultiplier);
@@ -379,6 +382,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 console.log("Winner data", data);
+                //TODO save the dealer toString and player toString;
                 determinePayout(data.winner, data.playerHandRanking, data.dealerHandRanking);
             })
             .catch(error => {
@@ -390,6 +394,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const payoutRequest = {
             anteBetAmount: anteBetAmount,
             tripsBetAmount: tripsBetAmount,
+            playBetAmount: playBetAmount,
             winner: winner,
             playerHandRanking: playerHandRanking,
             dealerHandRanking: dealerHandRanking

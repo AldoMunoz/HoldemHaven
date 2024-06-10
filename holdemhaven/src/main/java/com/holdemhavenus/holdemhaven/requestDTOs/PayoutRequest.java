@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 public class PayoutRequest {
     private BigDecimal anteBetAmount;
     private BigDecimal tripsBetAmount;
+    private BigDecimal playBetAmount;
     private char winner;
     private int playerHandRanking;
     private int dealerHandRanking;

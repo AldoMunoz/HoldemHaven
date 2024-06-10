@@ -6,6 +6,7 @@ import com.holdemhavenus.holdemhaven.repositories.PlayerRepository;
 import com.holdemhavenus.holdemhaven.responseDTOs.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -191,18 +192,23 @@ public class PlayerService {
 
     public PayoutResponse determinePayout(PayoutRequest request, String username) {
         Player player = playerRepository.findByUsername(username);
-        PayoutResponse response;
 
         if(player != null) {
             BigDecimal antePayout = antePayout(request);
-            BigDecimal blindPayout = blindPayout(request);
+            BigDecimal dealerPayout = dealerPayout(request);
             BigDecimal tripsPayout = tripsPayout(request);
+            BigDecimal playPayout = playPayout(request);
+
+            BigDecimal payoutSum = antePayout.add(dealerPayout).add(tripsPayout).add(playPayout);
+
+            player.setAccountBalance(player.getAccountBalance().add(payoutSum));
+            playerRepository.save(player);
+
+            return new PayoutResponse(true, "Successful payout.", player.getAccountBalance(), antePayout, dealerPayout, tripsPayout, playPayout, payoutSum);
         }
         else {
-
+            return new PayoutResponse(false, "Error, player not logged in");
         }
-
-        return null;
     }
 
     private BigDecimal antePayout(PayoutRequest request) {
@@ -213,30 +219,38 @@ public class PlayerService {
             else return request.getAnteBetAmount().multiply(BigDecimal.valueOf(2));
         }
     }
-    private BigDecimal blindPayout(PayoutRequest request) {
+    private BigDecimal dealerPayout(PayoutRequest request) {
         if(request.getWinner() == 'd') return BigDecimal.valueOf(0);
         else if(request.getWinner() == 't') return request.getAnteBetAmount();
         else {
             if(request.getPlayerHandRanking() <= 3) return request.getAnteBetAmount();
             else if (request.getPlayerHandRanking() == 4) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(2));
-            else if (request.getPlayerHandRanking() == 5) return (request.getAnteBetAmount().divide(BigDecimal.valueOf(2))).multiply(BigDecimal.valueOf(3));
-            else if (request.getPlayerHandRanking() == 6) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(3));
-            else if (request.getPlayerHandRanking() == 7) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(10));
-            else if (request.getPlayerHandRanking() == 8) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(50));
-            else if (request.getPlayerHandRanking() == 9) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(500));
+            else if (request.getPlayerHandRanking() == 5) return ((request.getAnteBetAmount().divide(BigDecimal.valueOf(2))).multiply(BigDecimal.valueOf(3))).add(request.getAnteBetAmount());
+            else if (request.getPlayerHandRanking() == 6) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(4));
+            else if (request.getPlayerHandRanking() == 7) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(11));
+            else if (request.getPlayerHandRanking() == 8) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(51));
+            else if (request.getPlayerHandRanking() == 9) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(501));
         }
         return BigDecimal.valueOf(0);
     }
     private BigDecimal tripsPayout(PayoutRequest request) {
-        if(request.getPlayerHandRanking() == 3) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(3));
-        else if (request.getPlayerHandRanking() == 4) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(4));
-        else if (request.getPlayerHandRanking() == 5) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(7));
-        else if (request.getPlayerHandRanking() == 6) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(8));
-        else if (request.getPlayerHandRanking() == 7) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(30));
-        else if (request.getPlayerHandRanking() == 8) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(40));
-        else if (request.getPlayerHandRanking() == 9) return request.getAnteBetAmount().multiply(BigDecimal.valueOf(50));
+        if(request.getPlayerHandRanking() <= 2) return BigDecimal.valueOf(0);
+        else if (request.getPlayerHandRanking() == 3) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(4));
+        else if (request.getPlayerHandRanking() == 4) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(5));
+        else if (request.getPlayerHandRanking() == 5) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(8));
+        else if (request.getPlayerHandRanking() == 6) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(9));
+        else if (request.getPlayerHandRanking() == 7) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(31));
+        else if (request.getPlayerHandRanking() == 8) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(41));
+        else if (request.getPlayerHandRanking() == 9) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(51));
 
         return BigDecimal.valueOf(0);
+    }
+
+    private BigDecimal playPayout(PayoutRequest request) {
+        if(request.getWinner() == 'p') return request.getPlayBetAmount().multiply(BigDecimal.valueOf(2));
+        else if (request.getWinner() == 't') return request.getPlayBetAmount();
+        else if (request.getWinner() == 'd') return BigDecimal.valueOf(0);
+        else return BigDecimal.valueOf(0);
     }
 
     //checks if email is valid, or if the email was already used to register an account

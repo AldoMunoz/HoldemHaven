@@ -101,17 +101,14 @@ public class PlayerController {
         String playerUsername = getUsername(session);
 
         if(playerUsername == null) {
-            return null;
+            return new PayoutResponse(false, "User not logged in or session expired.");
         }
 
-        playerService.determinePayout(payoutRequest, playerUsername);
-        /*
+        PayoutResponse response = playerService.determinePayout(payoutRequest, playerUsername);
         if(response.isSuccess())
             session.setAttribute("accountBalance", response.getAccountBalance());
 
-
-         */
-        return null;
+        return response;
     }
 
     private String getUsername(HttpSession session) {

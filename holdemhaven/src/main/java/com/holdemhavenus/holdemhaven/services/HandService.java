@@ -358,12 +358,7 @@ public class HandService {
         hand.getFiveCardHand()[pos] = card;
     }
 
-    // TODO: Given a 5 card hand and a known handRanking, provide a readable string
-    // version of the hand
-    // TODO: look at HandRanking.java to see the strings you have to complete
-    // TODO: For example, if you're given the fiveCardHand [4,4,4,4,A] and
-    // handRanking FOUR_OF_A_KIND,
-    // TODO: the result of this function should be "Four of a Kind, 4's"
+    //Converts a hand into a legible string
     public String toString(Card[] fiveCardHand, HandRanking handRanking) {
         String rank = handRanking.getHand() + ", ";
         ArrayList<String> hand = new ArrayList<>();

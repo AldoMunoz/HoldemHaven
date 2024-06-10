@@ -43,21 +43,21 @@ public class TableService {
         HandRanking dealerHandRanking = handService.findHandRanking(dealerHand);
 
         if(playerHandRanking.getRanking() > dealerHandRanking.getRanking()) {
-            return new ShowdownResponse('p', playerHandRanking.getRanking(), dealerHandRanking.getRanking());
+            return new ShowdownResponse('p', playerHandRanking.getRanking(), dealerHandRanking.getRanking(), playerHand.toString(), dealerHand.toString());
         }
         else if (playerHandRanking.getRanking() < dealerHandRanking.getRanking()) {
-            return new ShowdownResponse('d', playerHandRanking.getRanking(), dealerHandRanking.getRanking());
+            return new ShowdownResponse('d', playerHandRanking.getRanking(), dealerHandRanking.getRanking(), playerHand.toString(), dealerHand.toString());
         }
         else {
             for (int i = 0; i < 5; i++) {
                 if(playerHand.getFiveCardHand()[i].getVal() > dealerHand.getFiveCardHand()[i].getVal()) {
-                    return new ShowdownResponse('p', playerHandRanking.getRanking(), dealerHandRanking.getRanking());
+                    return new ShowdownResponse('p', playerHandRanking.getRanking(), dealerHandRanking.getRanking(), playerHand.toString(), dealerHand.toString());
                 }
                 else if(playerHand.getFiveCardHand()[i].getVal() < dealerHand.getFiveCardHand()[i].getVal()) {
-                    return new ShowdownResponse('d', playerHandRanking.getRanking(), dealerHandRanking.getRanking());
+                    return new ShowdownResponse('d', playerHandRanking.getRanking(), dealerHandRanking.getRanking(), playerHand.toString(), dealerHand.toString());
                 }
             }
-            return new ShowdownResponse('t', playerHandRanking.getRanking(), dealerHandRanking.getRanking());
+            return new ShowdownResponse('t', playerHandRanking.getRanking(), dealerHandRanking.getRanking(), playerHand.toString(), dealerHand.toString());
         }
     }
 
