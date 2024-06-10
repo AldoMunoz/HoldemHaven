@@ -5,6 +5,7 @@ import com.holdemhavenus.holdemhaven.entities.Table;
 import com.holdemhavenus.holdemhaven.requestDTOs.PlayerActionRequest;
 import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.PlayerActionResponse;
+import com.holdemhavenus.holdemhaven.responseDTOs.ShowdownResponse;
 import com.holdemhavenus.holdemhaven.services.TableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +42,11 @@ public class TableController {
         System.out.println(request.getAction());
         System.out.println(request.getBetAmount());
         return tableService.playerAction(table, request);
+    }
+
+    @PostMapping("/showdown")
+    public ShowdownResponse showdown(@ModelAttribute("table") Table table) {
+        System.out.println("entered showdown response");
+        return tableService.showdown(table);
     }
 }

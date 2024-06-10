@@ -15,7 +15,7 @@ public class PlayerActionResponse {
     private char street;
     private String message;
     private ArrayList<Card> boardCards;
-    private ArrayList<Card> dealerHoleCards;
+    private Card[] dealerHoleCards;
 
     public PlayerActionResponse(boolean isSuccess, String message) {
         this.isSuccess = isSuccess;
@@ -24,6 +24,6 @@ public class PlayerActionResponse {
 
     public PlayerActionResponse() {
         boardCards = new ArrayList<>();
-        dealerHoleCards = new ArrayList<>();
+        dealerHoleCards = new Card[2];
     }
 }

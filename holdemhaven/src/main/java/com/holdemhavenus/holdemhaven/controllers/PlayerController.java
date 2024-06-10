@@ -1,10 +1,7 @@
 package com.holdemhavenus.holdemhaven.controllers;
 
 import com.holdemhavenus.holdemhaven.requestDTOs.*;
-import com.holdemhavenus.holdemhaven.responseDTOs.VerifyBetResponse;
-import com.holdemhavenus.holdemhaven.responseDTOs.LoginPlayerResponse;
-import com.holdemhavenus.holdemhaven.responseDTOs.MoneyTransferResponse;
-import com.holdemhavenus.holdemhaven.responseDTOs.RegisterPlayerResponse;
+import com.holdemhavenus.holdemhaven.responseDTOs.*;
 import com.holdemhavenus.holdemhaven.services.PlayerService;
 import com.holdemhavenus.holdemhaven.services.TableService;
 import jakarta.servlet.http.HttpSession;
@@ -97,6 +94,24 @@ public class PlayerController {
             session.setAttribute("accountBalance", response.getAccountBalance());
 
         return response;
+    }
+
+    @PostMapping("/payout")
+    private PayoutResponse payout(@RequestBody PayoutRequest payoutRequest, HttpSession session) {
+        String playerUsername = getUsername(session);
+
+        if(playerUsername == null) {
+            return null;
+        }
+
+        playerService.determinePayout(payoutRequest, playerUsername);
+        /*
+        if(response.isSuccess())
+            session.setAttribute("accountBalance", response.getAccountBalance());
+
+
+         */
+        return null;
     }
 
     private String getUsername(HttpSession session) {

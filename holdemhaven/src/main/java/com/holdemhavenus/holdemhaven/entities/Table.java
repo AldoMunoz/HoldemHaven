@@ -12,8 +12,8 @@ public class Table {
     private Deck deck;
     private DeckService deckService;
     private ArrayList<Card> board;
-    private ArrayList<Card> dealerHoleCards;
-    private ArrayList<Card> playerHoleCards;
+    private Card[] dealerHoleCards;
+    private Card[] playerHoleCards;
 
     private String street;
 
@@ -21,8 +21,8 @@ public class Table {
         deck = new Deck();
         deckService = new DeckService();
         board = new ArrayList<>();
-        dealerHoleCards = new ArrayList<>();
-        playerHoleCards = new ArrayList<>();
+        dealerHoleCards = new Card[2];
+        playerHoleCards = new Card[2];
 
         street = "";
     }

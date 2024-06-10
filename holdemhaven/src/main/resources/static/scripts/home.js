@@ -348,6 +348,9 @@ document.addEventListener("DOMContentLoaded", function() {
                                 setTimeout(() => {
                                     revealDealerHoleCards(data.dealerHoleCards);
                                 }, 4000);
+                                setTimeout(() => {
+                                    determineWinner();
+                                }, 6000);
                             }
                             else {
                                 alert(data.message);
@@ -360,6 +363,48 @@ document.addEventListener("DOMContentLoaded", function() {
                 else {
                     alert(data.message);
                 }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    }
+
+    function determineWinner() {
+        fetch('/table/showdown', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Winner data", data);
+                determinePayout(data.winner, data.playerHandRanking, data.dealerHandRanking);
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    }
+
+    function determinePayout(winner, playerHandRanking, dealerHandRanking) {
+        const payoutRequest = {
+            anteBetAmount: anteBetAmount,
+            tripsBetAmount: tripsBetAmount,
+            winner: winner,
+            playerHandRanking: playerHandRanking,
+            dealerHandRanking: dealerHandRanking
+        }
+
+        fetch('/api/payout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payoutRequest)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
             })
             .catch(error => {
                 alert(error.message);

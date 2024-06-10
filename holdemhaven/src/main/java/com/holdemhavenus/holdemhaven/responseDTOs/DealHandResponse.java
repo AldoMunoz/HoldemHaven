@@ -9,9 +9,9 @@ import java.util.ArrayList;
 @Getter
 @Setter
 public class DealHandResponse {
-    private ArrayList<Card> playerHoleCards;
+    private Card[] playerHoleCards;
 
-    public DealHandResponse(ArrayList<Card> playerHoleCards) {
+    public DealHandResponse(Card[] playerHoleCards) {
         this.playerHoleCards = playerHoleCards;
     }
 }
