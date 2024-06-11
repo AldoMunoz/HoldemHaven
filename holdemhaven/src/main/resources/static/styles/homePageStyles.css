@@ -130,6 +130,16 @@ body {
     cursor: pointer;
 }
 
+.hand-info {
+    position: absolute;
+    background-color: red;
+    border: 2px solid lightcoral;
+    padding: 2vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
 .flashing {
     animation: flash 1s infinite;
 }
@@ -164,6 +174,15 @@ body {
     top: 68%;
     left: 47.5%;
     transform: translate(-50%, -50%);
+}
+
+#dealer-hand-container {
+    top: 26%;
+    right: 26.5%;
+    padding: 0.2vh;
+}
+#dealer-hand-container h6 {
+    margin: 0;
 }
 
 .placed-chip {

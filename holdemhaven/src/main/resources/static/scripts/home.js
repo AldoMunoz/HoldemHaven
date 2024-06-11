@@ -23,6 +23,9 @@ document.addEventListener("DOMContentLoaded", function() {
     let selectedChipSrc = '';
     let selectedChipValue = 0;
 
+    let playerHandToString = "";
+    let dealerHandToString = "";
+
     //initialize bootstrap tooltips
     chips.forEach(chip => {
         new bootstrap.Tooltip(chip);
@@ -324,11 +327,13 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 if(data.success) {
-                    //set Play Bet Amount
+                    //update player account balance
+                    document.getElementById('balanceDisplay').textContent = data.accountBalance;
+                    //set play bet Amount
                     playBetAmount = anteBetAmount*betMultiplier;
-                    //hide button container (probably need to rename that
-                    //display chips in front-end
+                    //hide button container TODO (probably need to rename that)
                     displayPlayBet(betMultiplier);
+                    //display chips in front-end
                     document.querySelector('.button-container').style.display = 'none';
 
                     const playerActionRequest = {
@@ -383,6 +388,8 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 console.log("Winner data", data);
                 //TODO save the dealer toString and player toString;
+                playerHandToString = data.playerHandToString;
+                dealerHandToString = data.dealerHandToString;
                 determinePayout(data.winner, data.playerHandRanking, data.dealerHandRanking);
             })
             .catch(error => {
@@ -410,10 +417,25 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
+                displayDealerHand();
+                displayPlayerHandAndPayoutDetails();
+                //TODO displayEndHandMessage();
             })
             .catch(error => {
                 alert(error.message);
             });
+    }
+
+    function displayDealerHand() {
+        const dealerHandContainer = document.querySelector("#dealer-hand-container");
+        dealerHandContainer.innerHTML = `
+        <h6>${dealerHandToString}</h6>
+        `
+        dealerHandContainer.style.display = 'flex';
+    }
+
+    function displayPlayerHandAndPayoutDetails() {
+        //TODO
     }
 
     function dealFlop(cards) {
@@ -484,13 +506,12 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 console.log(data);
                 if(data.success) {
-                    //TODO check street
                     //if flop do flop action function call
-                    //if river do river action function call
                     if(data.street === 'f') {
                         dealFlop(data.boardCards);
                         displayFlopBettingOptions();
                     }
+                    //if river do river action function call
                     else if(data.street === 'r') {
                         dealTurnAndRiver(data.boardCards);
                         displayRiverBettingOptions();
@@ -508,7 +529,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     //TODO
     function foldHand() {
-
     }
 
     clearButton.addEventListener('click', clearBets);
@@ -523,7 +543,7 @@ async function fetchSessionInformation() {
             const attributes = await response.json();
             if(attributes.username != null && attributes.accountBalance != null) {
                 document.getElementById('usernameDisplay').textContent = attributes.username;
-                document.getElementById('balanceDisplay').textContent = attributes.accountBalance.toFixed(2);
+                document.getElementById('balanceDisplay').textContent = attributes.accountBalance;
 
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('userInfoContainer').style.display = 'block';
