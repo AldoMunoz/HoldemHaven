@@ -134,10 +134,11 @@ body {
     position: absolute;
     background-color: red;
     border: 2px solid lightcoral;
-    padding: 2vh;
+    padding: 0.2vh;
     display: none;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 
 .flashing {
@@ -179,10 +180,18 @@ body {
 #dealer-hand-container {
     top: 26%;
     right: 26.5%;
-    padding: 0.2vh;
 }
-#dealer-hand-container h6 {
-    margin: 0;
+
+#player-hand-container {
+    top: 65%;
+    right: 57%;
+}
+
+#hand-summary-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .placed-chip {
@@ -197,6 +206,10 @@ body {
 
 .tight-spacing {
     margin-bottom: .5vh;
+}
+
+h6, h5, h2, p {
+    margin: 0.2vh;
 }
 
 footer.footer {

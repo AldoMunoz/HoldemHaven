@@ -416,10 +416,16 @@ document.addEventListener("DOMContentLoaded", function() {
         })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
-                displayDealerHand();
-                displayPlayerHandAndPayoutDetails();
-                //TODO displayEndHandMessage();
+                if(data.success) {
+                    console.log(data);
+                    displayDealerHand();
+                    displayPlayerHandAndPayoutDetails(data.totalPayout, data.antePayout, data.dealerPayout, data.playPayout, data.tripsPayout);
+                    displayEndHandMessage(data.totalPayout);
+                    //TODO update accountBalance
+                }
+                else {
+                    alert(data.message);
+                }
             })
             .catch(error => {
                 alert(error.message);
@@ -434,8 +440,63 @@ document.addEventListener("DOMContentLoaded", function() {
         dealerHandContainer.style.display = 'flex';
     }
 
-    function displayPlayerHandAndPayoutDetails() {
-        //TODO
+    function displayPlayerHandAndPayoutDetails(totalPayout, antePayout, dealerPayout, playPayout, tripsPayout) {
+        const playerHandContainer = document.querySelector("#player-hand-container");
+
+        if(antePayout === anteBetAmount) antePayout = antePayout + " (push)";
+        if(dealerPayout === anteBetAmount) dealerPayout = dealerPayout + " (push)";
+        if(playPayout === playBetAmount) playPayout = playPayout + " (push)";
+
+        if(totalPayout === 0) {
+            playerHandContainer.innerHTML = `
+            <h6><u>${playerHandToString}</u></h6>
+            <h5>NO WINS</h5>
+            `
+        }
+        else if(tripsBetAmount === 0) {
+            playerHandContainer.innerHTML = `
+            <h6><u>${playerHandToString}</u></h6>
+            <p class="small">ANTE WIN: ${antePayout}</p>
+            <p class="small">DEALER WIN: ${dealerPayout}</p>
+            <p class="small">PLAY WIN: ${playPayout}</p>
+            `
+        }
+        else {
+            playerHandContainer.innerHTML = `
+            <h6><u>${playerHandToString}</u></h6>
+            <p class="small">ANTE WIN: ${antePayout}</p>
+            <p class="small">DEALER WIN: ${dealerPayout}</p>
+            <p class="small">PLAY WIN: ${playPayout}</p>
+            <p class="small">TRIPS WIN: ${tripsPayout}</p>
+            `
+        }
+
+        playerHandContainer.style.display = 'flex';
+    }
+
+    function displayEndHandMessage(totalPayout) {
+        const handSummaryContainer = document.querySelector("#hand-summary-container");
+
+        if(totalPayout === 0) {
+            handSummaryContainer.innerHTML = `
+            <h2>NO WINS</h2>
+            <button id="end-hand-button" class="btn btn-primary">click to continue</button>
+            `
+        }
+        else {
+            handSummaryContainer.innerHTML = `
+            <h2>YOU WON: $${totalPayout}</h2>
+            <button id="end-hand-button" class="btn btn-primary">click to continue</button>
+            `
+        }
+
+        document.getElementById("end-hand-button").addEventListener('click', endHand);
+        handSummaryContainer.style.display = 'flex';
+    }
+
+    function endHand() {
+
+
     }
 
     function dealFlop(cards) {

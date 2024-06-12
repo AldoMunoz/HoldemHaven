@@ -212,7 +212,8 @@ public class PlayerService {
     }
 
     private BigDecimal antePayout(PayoutRequest request) {
-        if(request.getWinner() == 'd') return BigDecimal.valueOf(0);
+        if(request.getWinner() == 'd' && request.getDealerHandRanking() >= 1) return BigDecimal.valueOf(0);
+        else if(request.getWinner() == 'd' && request.getDealerHandRanking() == 0) return request.getAnteBetAmount();
         else if(request.getWinner() == 't') return request.getAnteBetAmount();
         else {
             if(request.getDealerHandRanking() == 0) return request.getAnteBetAmount();
