@@ -4,6 +4,7 @@ package com.holdemhavenus.holdemhaven.controllers;
 import com.holdemhavenus.holdemhaven.entities.Table;
 import com.holdemhavenus.holdemhaven.requestDTOs.PlayerActionRequest;
 import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
+import com.holdemhavenus.holdemhaven.responseDTOs.GetDealerHandResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.PlayerActionResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.ShowdownResponse;
 import com.holdemhavenus.holdemhaven.services.TableService;
@@ -46,7 +47,16 @@ public class TableController {
 
     @PostMapping("/showdown")
     public ShowdownResponse showdown(@ModelAttribute("table") Table table) {
-        System.out.println("entered showdown response");
         return tableService.showdown(table);
+    }
+
+    @PostMapping("/get-dealer-hand")
+    public GetDealerHandResponse getDealerHand(@ModelAttribute("table") Table table) {
+        return tableService.getDealerHand(table);
+    }
+
+    @PostMapping("/end-hand")
+    public void endHand(@ModelAttribute("table") Table table) {
+        tableService.endHand(table);
     }
 }

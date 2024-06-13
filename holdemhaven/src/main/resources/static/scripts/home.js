@@ -16,13 +16,13 @@ document.addEventListener("DOMContentLoaded", function() {
     const anteArea = document.getElementById("ante-area");
     const dealerArea = document.getElementById("dealer-area");
     const tripsArea = document.getElementById("trips-area");
+    const playArea = document.getElementById('play-area');
 
     let anteBetAmount = 0;
     let tripsBetAmount = 0;
     let playBetAmount = 0;
     let selectedChipSrc = '';
     let selectedChipValue = 0;
-
     let playerHandToString = "";
     let dealerHandToString = "";
 
@@ -239,9 +239,13 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function hideChips() {
-        const chipContainer = document.querySelector('.chip-container');
-        chipContainer.style.display = 'none';
+        document.querySelector('.chip-container').style.displalay = 'none';
     }
+
+    function showChips() {
+        document.querySelector('.chip-container').style.displalay = 'flex';
+    }
+
 
     function deselectChip() {
         document.querySelectorAll('.selected-chip').forEach(selectedChip => {
@@ -282,7 +286,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const buttonContainer = document.querySelector('.button-container');
         buttonContainer.innerHTML = `
             <button id="1x-button" class="btn btn-primary btn-circle">1x</button>
-            <button id="check-button" class="btn btn-secondary btn-circle">Fold</button>
+            <button id="check-button" class="btn bg-danger btn-circle">Fold</button>
         `;
 
         document.getElementById("1x-button").addEventListener('click', function() {
@@ -292,7 +296,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function displayPlayBet(chipCount) {
-        const playArea = document.querySelector('#play-area');
         let chipImageSource;
 
         if(anteBetAmount === 1) {
@@ -331,9 +334,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     document.getElementById('balanceDisplay').textContent = data.accountBalance;
                     //set play bet Amount
                     playBetAmount = anteBetAmount*betMultiplier;
-                    //hide button container TODO (probably need to rename that)
-                    displayPlayBet(betMultiplier);
                     //display chips in front-end
+                    displayPlayBet(betMultiplier);
+                    //hide button container TODO (probably need to rename that)
                     document.querySelector('.button-container').style.display = 'none';
 
                     const playerActionRequest = {
@@ -421,7 +424,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     displayDealerHand();
                     displayPlayerHandAndPayoutDetails(data.totalPayout, data.antePayout, data.dealerPayout, data.playPayout, data.tripsPayout);
                     displayEndHandMessage(data.totalPayout);
-                    //TODO update accountBalance
+                    document.getElementById('balanceDisplay').textContent = data.accountBalance;
                 }
                 else {
                     alert(data.message);
@@ -495,8 +498,57 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function endHand() {
+        fetch('/table/end-hand', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                console.log('Request was successful');
+                clearTable();
+            })
+            .catch(error => {
+                alert(error.message);
+                // TODO: restart game?
+            });
+
+    }
+
+    function clearTable() {
+        showChips();
+        document.getElementById('player-cards-container').innerHTML = '';
+        document.getElementById('dealer-cards-container').innerHTML = '';
+        document.getElementById('board-cards-container').innerHTML = '';
+        anteArea.innerHTML = '';
+        dealerArea.innerHTML = '';
+        tripsArea.innerHTML = '';
+        playArea.innerHTML = '';
+        document.querySelector('.button-container').innerHTML = `
+            <button id="deal-button" class="btn btn-success btn-circle" disabled>Deal</button>
+            <button id="clear-button" class="btn btn-danger btn-circle" disabled>Clear</button>
+        `
+        document.querySelector('.button-container').style.display = 'flex';
+
+        document.getElementById('player-hand-container').innerHTML = '';
+        document.getElementById('player-hand-container').style.display = 'none';
+        document.getElementById('dealer-hand-container').innerHTML = '';
+        document.getElementById('dealer-hand-container').style.display = 'none';
+        document.getElementById('hand-summary-container').innerHTML = '';
+        document.getElementById('hand-summary-container').style.display = 'none';
 
 
+        //TODO clear all cards divs
+        //TODO clear placed chip divs
+        //TODO reset, display, and disable bet and clear buttons
+        //
+        //TODO clear hand divs
     }
 
     function dealFlop(cards) {
@@ -590,6 +642,56 @@ document.addEventListener("DOMContentLoaded", function() {
 
     //TODO
     function foldHand() {
+        const playerActionRequest = {
+            action: 'F',
+            betAmount: 0
+        }
+
+        fetch('/table/player-action', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(playerActionRequest)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if(data.success) {
+                    document.querySelector('.button-container').style.display = 'none';
+                    getDealerHand();
+                }
+                else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+                //TODO restart game?
+            });
+    }
+
+    function getDealerHand() {
+        fetch('/table/get-dealer-hand', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                revealDealerHoleCards(data.dealerHoleCards);
+                dealerHandToString = data.dealerHandToString;
+                displayDealerHand();
+                setTimeout(() => {
+                    displayEndHandMessage(0);
+                }, 2000);
+            })
+            .catch(error => {
+                alert(error.message);
+                //TODO restart game?
+            });
     }
 
     clearButton.addEventListener('click', clearBets);

@@ -3,6 +3,7 @@ package com.holdemhavenus.holdemhaven.services;
 import com.holdemhavenus.holdemhaven.entities.*;
 import com.holdemhavenus.holdemhaven.requestDTOs.PlayerActionRequest;
 import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
+import com.holdemhavenus.holdemhaven.responseDTOs.GetDealerHandResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.PlayerActionResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.ShowdownResponse;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,7 @@ public class TableService {
         table.setStreet("preFlop");
 
         //send the player cards back to the front-end
-        DealHandResponse response = new DealHandResponse(table.getPlayerHoleCards());
-        return response;
+        return new DealHandResponse(table.getPlayerHoleCards());
     }
 
     public ShowdownResponse showdown(Table table) {
@@ -65,6 +65,24 @@ public class TableService {
             return new ShowdownResponse('t', playerHandRanking.getRanking(), dealerHandRanking.getRanking(),
                     handService.toString(playerHand.getFiveCardHand(), playerHandRanking), handService.toString(dealerHand.getFiveCardHand(), dealerHandRanking));
         }
+    }
+
+    public GetDealerHandResponse getDealerHand(Table table) {
+        HandService handService = new HandService();
+
+        Hand dealerHand = new Hand(table.getDealerHoleCards(), table.getBoard());
+        HandRanking dealerHandRanking = handService.findHandRanking(dealerHand);
+
+        return new GetDealerHandResponse(table.getDealerHoleCards(), handService.toString(dealerHand.getFiveCardHand(), dealerHandRanking));
+    }
+
+    public void endHand(Table table) {
+        table.getDeckService().joinDeck(table.getDeck());
+        table.getBoard().clear();
+
+        table.setPlayerHoleCards(new Card[2]);
+        table.setDealerHoleCards(new Card[2]);
+        table.setStreet("");
     }
 
     public PlayerActionResponse playerAction(Table table, PlayerActionRequest request) {
