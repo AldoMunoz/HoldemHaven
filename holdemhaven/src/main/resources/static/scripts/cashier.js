@@ -25,12 +25,15 @@ function displayWithdrawForm() {
 function onSubmitDeposit() {
     const depositAmount = document.getElementById('depositAmount').value;
 
+    if (!depositAmount) {
+        alert('Please enter a deposit amount.');
+        return;
+    }
+
     const moneyTransferRequest = {
         requestType: "DEPOSIT",
         amount: depositAmount
     };
-
-    console.log("Sending request:", moneyTransferRequest);
 
     fetch('/api/deposit', {
         method: 'POST',
@@ -39,15 +42,8 @@ function onSubmitDeposit() {
         },
         body: JSON.stringify(moneyTransferRequest),
     })
-        .then(response => {
-            console.log("Received response:", response);
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            console.log("Data received:", data);
             if (data.success) {
                 alert('Deposit successful');
             } else {
@@ -63,12 +59,15 @@ function onSubmitDeposit() {
 function onSubmitWithdrawal() {
     const withdrawAmount = document.getElementById('withdrawAmount').value;
 
+    if (!withdrawAmount) {
+        alert('Please enter a withdraw amount.');
+        return;
+    }
+
     const moneyTransferRequest = {
         requestType: "WITHDRAW",
         amount: withdrawAmount
     };
-
-    console.log("Sending request:", moneyTransferRequest);
 
     fetch('/api/withdraw', {
         method: 'POST',
@@ -77,13 +76,7 @@ function onSubmitWithdrawal() {
         },
         body: JSON.stringify(moneyTransferRequest),
     })
-        .then(response => {
-            console.log("Received response:", response);
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             console.log("Data received:", data);
             if (data.success) {
@@ -94,7 +87,7 @@ function onSubmitWithdrawal() {
         })
         .catch(error => {
             console.error("Fetch error:", error);
-            alert(error.message);
+            //alert(error.message);
         });
 }
 

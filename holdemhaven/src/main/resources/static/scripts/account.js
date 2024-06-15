@@ -27,16 +27,109 @@ function displayDeleteAccountForm() {
     deleteAccountForm.style.display = 'block';
 }
 
-function onChangeUsername() {
+async function onChangeUsername() {
+    const newUsername = document.getElementById('newUsername').value;
 
+    fetch('/api/changeUsername', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newUsername),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Successfully changed username.');
+                document.getElementById('username').textContent = data.username;
+            } else {
+                alert('Username change failed: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+            alert(error.message);
+        });
 }
 
 function onChangePassword() {
+    const changePasswordRequest = {
+        currentPassword: document.getElementById('currentPassword').value,
+        newPassword: document.getElementById('newPassword').value,
+        confirmNewPassword: document.getElementById('confirmNewPassword').value
+    }
 
+    fetch('/api/changePassword', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(changePasswordRequest),
+    })
+        .then(response => response.json())
+        .then(async data => {
+            if (data.success) {
+                alert('Successfully changed password.');
+                //TODO redirect to home page, log out
+                try {
+                    const response = await fetch("/logout", {
+                        method: 'POST',
+                    });
+                    if (response.ok) {
+                        await response.json().catch(() => ({}));
+
+                        await fetchHomePage();
+                    } else {
+                        console.error("Failed to log out.");
+                    }
+                } catch (error) {
+                    console.log("Error: ", error);
+                }
+            } else {
+                alert('Password change failed: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+            alert(error.message);
+        });
 }
 
-function onDeleteAcocunt() {
+function onDeleteAccount() {
+    fetch('/api/deleteAccount', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => response.json())
+        .then(async data => {
+            if (data.success) {
+                alert('Account deleted.');
 
+                try {
+                    const response = await fetch("/logout", {
+                        method: 'POST',
+                    });
+                    if (response.ok) {
+                        await response.json().catch(() => ({}));
+
+                        await fetchHomePage();
+                    } else {
+                        console.error("Failed to log out.");
+                    }
+                } catch (error) {
+                    console.log("Error: ", error);
+                }
+                //TODO redirect to home page and log out
+            } else {
+                alert('Delete account failed: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+            alert(error.message);
+        });
 }
 async function fetchSessionAttributes() {
     try {

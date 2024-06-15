@@ -961,7 +961,7 @@ async function handleLogOut() {
             method: 'POST',
         });
         if (response.ok) {
-            const result = await response.json().catch(() => ({}));
+           await response.json().catch(() => ({}));
 
 
             document.getElementById('gameContainer').style.display = 'none';

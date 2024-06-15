@@ -63,6 +63,44 @@ public class PlayerController {
         return response;
     }
 
+    @PostMapping("/changeUsername")
+    public ChangeUsernameResponse changeUsername(@RequestBody String newUsername, HttpSession session) {
+        String playerUsername = getUsername(session);
+        newUsername = newUsername.replaceAll("\"", "");
+
+        if(playerUsername == null) {
+            return new ChangeUsernameResponse(false, "User not logged in or session expired.");
+        }
+
+        ChangeUsernameResponse response = playerService.changeUsername(playerUsername, newUsername);
+        if(response.isSuccess())
+            session.setAttribute("username", response.getUsername());
+
+        return response;
+    }
+
+    @PostMapping("/changePassword")
+    public ChangePasswordResponse changePassword(@RequestBody ChangePasswordRequest request, HttpSession session) {
+        String playerUsername = getUsername(session);
+
+        if(playerUsername == null) {
+            return new ChangePasswordResponse(false, "User not logged in or session expired.");
+        }
+
+        return playerService.changePassword(request, playerUsername);
+    }
+
+    @PostMapping("/deleteAccount")
+    public DeleteAccountResponse deleteAccount(HttpSession session) {
+        String playerUsername = getUsername(session);
+
+        if(playerUsername == null) {
+            return new DeleteAccountResponse(false, "User not logged in or session expired.");
+        }
+
+        return playerService.deleteAccount(playerUsername);
+    }
+
 
     @PostMapping("/verifyBet")
     public VerifyBetResponse verifyBet(@RequestBody VerifyBetRequest request, HttpSession session) {

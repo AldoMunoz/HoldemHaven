@@ -46,10 +46,11 @@ public class PlayerService {
         else if(!doesEmailExist(request.getEmail())) {
             return new RegisterPlayerResponse(false, "Email is already associated with an account.");
         }
-        //Check if username exists, and only contains certain characters
+        //Check if username is valid
         else if(!isValidUsername(request.getUsername())) {
             return new RegisterPlayerResponse(false, "Invalid username. Use only english letters, numbers and \"_\"");
         }
+        //check if username exists
         else if(!doesUsernameExist(request.getUsername())) {
             return new RegisterPlayerResponse(false, "Username is already associated with an account.");
         }
@@ -132,6 +133,54 @@ public class PlayerService {
             response = new MoneyTransferResponse(false, "Unsuccessful withdrawal. Double check the withdrawal requirements.");
         }
         return response;
+    }
+
+    public ChangeUsernameResponse changeUsername(String username, String newUsername) {
+        Player player = playerRepository.findByUsername(username);
+
+        //Check if username is valid
+        if(!isValidUsername(newUsername)) {
+            return new ChangeUsernameResponse(false, "Invalid username. Use only english letters, numbers and \"_\"");
+        }
+        //check if username exists
+        else if(!doesUsernameExist(newUsername)) {
+            return new ChangeUsernameResponse(false, "Username is already associated with an account.");
+        }
+        else {
+            player.setUsername(newUsername);
+            playerRepository.save(player);
+
+            return new ChangeUsernameResponse(true, "Successfully changed usernames.", newUsername);
+        }
+    }
+
+    public ChangePasswordResponse changePassword(ChangePasswordRequest request, String username) {
+        Player player = playerRepository.findByUsername(username);
+
+        if(!passwordEncoder.matches(request.getCurrentPassword(), player.getPassword())) {
+            return new ChangePasswordResponse(false, "Incorrect password input");
+        }
+        else if(!request.getNewPassword().equals(request.getConfirmNewPassword())) {
+            return new ChangePasswordResponse(false, "New passwords do not match");
+        }
+        else if(!isValidPassword(request.getNewPassword(), request.getConfirmNewPassword())) {
+            return new ChangePasswordResponse(false, "\"Invalid password. Must be between 8-30 characters, \" +\n" +
+                    "\"and only contain letters, numbers, and the following characters: \\\"!@#$%^&*()-_,.?\\\"\"");
+        }
+        else {
+            String encodedPassword = passwordEncoder.encode(request.getNewPassword());
+            player.setPassword(encodedPassword);
+            playerRepository.save(player);
+
+            return new ChangePasswordResponse(true, "Password successfully updated");
+        }
+    }
+
+
+    public DeleteAccountResponse deleteAccount(String username) {
+        playerRepository.delete(playerRepository.findByUsername(username));
+
+        return new DeleteAccountResponse(true, "Successfully deleted account");
     }
 
     public VerifyBetResponse verifyBet(VerifyBetRequest request, String username) {
