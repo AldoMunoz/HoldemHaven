@@ -10,16 +10,15 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
-public class PlayerActionResponse {
+public class PlayerActionResponse extends BaseResponse {
     private boolean isSuccess;
-    private char street;
     private String message;
+    private char street;
     private ArrayList<Card> boardCards;
     private Card[] dealerHoleCards;
 
     public PlayerActionResponse(boolean isSuccess, String message) {
-        this.isSuccess = isSuccess;
-        this.message = message;
+        super(isSuccess, message);
     }
 
     public PlayerActionResponse() {

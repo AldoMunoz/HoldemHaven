@@ -7,13 +7,12 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class VerifyBetResponse {
+public class VerifyBetResponse extends BaseResponse {
     private boolean isSuccess;
     private String message;
     private BigDecimal accountBalance;
 
     public VerifyBetResponse(boolean isSuccess, String message) {
-        this.isSuccess = isSuccess;
-        this.message = message;
+        super(isSuccess, message);
     }
 }

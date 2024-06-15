@@ -30,45 +30,37 @@ public class PlayerService {
 
     //checks input fields before saving a new Player to the repository
     public RegisterPlayerResponse verifyRegisterPlayerInformation(RegisterPlayerRequest request) {
-        //Check if first name and last name are only letters
+        //Check if first name is valid
         if(!isValidName(request.getFirstName())) {
-            RegisterPlayerResponse response = new RegisterPlayerResponse();
-            response.setSuccess(false);
-            response.setMessage("Invalid first name. Please use english letters only.");
-
-            return response;
+            return new RegisterPlayerResponse(false, "Invalid first name. Please use english letters only.");
         }
+        //check if last name is valid
         else if(!isValidName(request.getLastName())) {
-            RegisterPlayerResponse response = new RegisterPlayerResponse();
-            response.setSuccess(false);
-            response.setMessage("Invalid last name. Please use english letters only.");
-
-            return response;
+            return new RegisterPlayerResponse(false, "Invalid last name. Please use english letters only.");
         }
-        //Check if email is valid or exists in the database
+        //Check if email is valid
         else if(!isValidEmail(request.getEmail())) {
-            RegisterPlayerResponse response = new RegisterPlayerResponse();
-            response.setSuccess(false);
-            response.setMessage("Invalid email or an account already exists with the email address: " + request.getEmail());
-
-            return response;
+            return new RegisterPlayerResponse(false, "Invalid email.");
+        }
+        //check if email is already associated with an account in the database
+        else if(!doesEmailExist(request.getEmail())) {
+            return new RegisterPlayerResponse(false, "Email is already associated with an account.");
         }
         //Check if username exists, and only contains certain characters
         else if(!isValidUsername(request.getUsername())) {
-            RegisterPlayerResponse response = new RegisterPlayerResponse();
-            response.setSuccess(false);
-            response.setMessage("Invalid username. Use only english letters, numbers and \"_\"");
-
-            return response;
+            return new RegisterPlayerResponse(false, "Invalid username. Use only english letters, numbers and \"_\"");
         }
-        //Check if password contains certain characters, and if passwords match
+        else if(!doesUsernameExist(request.getUsername())) {
+            return new RegisterPlayerResponse(false, "Username is already associated with an account.");
+        }
+        //Check if passwords match
+        else if (!(request.getPassword().equals(request.getConfirmPassword()))) {
+            return new RegisterPlayerResponse(false, "Passwords do not match.");
+        }
+        //Check if password contains certain characters
         else if(!isValidPassword(request.getPassword(), request.getConfirmPassword())) {
-            RegisterPlayerResponse response = new RegisterPlayerResponse();
-            response.setSuccess(false);
-            response.setMessage("Invalid password. Must be between 8-30 characters, and only contain letters, " +
-                    "numbers, and the following characters: \"!@#$%^&*()-_,.?\"");
-
-            return response;
+            return new RegisterPlayerResponse(false, "Invalid password. Must be between 8-30 characters, " +
+                    "and only contain letters, numbers, and the following characters: \"!@#$%^&*()-_,.?\"");
         }
         else {
             //Create and save player to the repository
@@ -84,29 +76,19 @@ public class PlayerService {
             playerRepository.save(player);
 
             //Send a success message to the controller
-            RegisterPlayerResponse response = new RegisterPlayerResponse();
-            response.setSuccess(true);
-            response.setMessage("Success, you can now sign in.");
-            return response;
+            return new RegisterPlayerResponse(true, "Success, you can now sign in.");
         }
     }
 
     public LoginPlayerResponse verifySignInCredentials(LoginPlayerRequest request) {
         Player player = playerRepository.findByUsername(request.getUsername());
-        LoginPlayerResponse response = new LoginPlayerResponse();
+
 
         if(player != null && passwordEncoder.matches(request.getPassword(), player.getPassword())) {
-            response.setSuccess(true);
-            response.setMessage("Success. You are now logged in.");
-            response.setPlayerUsername(player.getUsername());
-            response.setAccountBalance(player.getAccountBalance());
-
-            return response;
+            return new LoginPlayerResponse(true, "Success. You are now logged in.", player.getUsername(), player.getAccountBalance());
         }
-        response.setSuccess(false);
-        response.setMessage("Unsuccessful login. Try again.");
 
-        return response;
+        return new LoginPlayerResponse(false, "Unsuccessful login. Try again.");
     }
 
     @Transactional
@@ -254,17 +236,18 @@ public class PlayerService {
         else return BigDecimal.valueOf(0);
     }
 
-    //checks if email is valid, or if the email was already used to register an account
+    //checks if email follows proper regex pattern
     private boolean isValidEmail(String email) {
         if (email == null || email.isEmpty()) return false;
 
         //compare the email against the pattern
         Matcher matcher = EMAIL_PATTERN.matcher(email);
-        if(matcher.matches()) {
-            return playerRepository.findByEmail(email) == null;
-        }
+        return matcher.matches();
+    }
 
-        return false;
+    //checks if email is associated with an account in the database
+    private boolean doesEmailExist(String email) {
+        return playerRepository.findByEmail(email) == null;
     }
 
     //checks if first of last name follows proper regex pattern
@@ -278,15 +261,17 @@ public class PlayerService {
         return true;
     }
 
-    //checks if username follows proper regex pattern, and if username already exists in the database
+    //checks if username follows proper regex pattern
     private boolean isValidUsername(String username) {
         if(username == null) return false;
 
         Matcher matcher = USERNAME_PATTERN.matcher(username);
-        if(matcher.matches()) {
-            return playerRepository.findByUsername(username) == null;
-        }
-        return false;
+        return matcher.matches();
+    }
+
+    //checks if username is already associated with account in the database
+    private boolean doesUsernameExist(String username) {
+        return playerRepository.findByUsername(username) == null;
     }
 
     //checks if both user entered passwords are equal to each other

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class PayoutResponse {
+public class PayoutResponse extends BaseResponse {
     private boolean isSuccess;
     private String message;
     private BigDecimal antePayout;
@@ -18,13 +18,11 @@ public class PayoutResponse {
     private BigDecimal accountBalance;
 
     public PayoutResponse(boolean isSuccess, String message) {
-        this.isSuccess = isSuccess;
-        this.message = message;
+        super(isSuccess, message);
     }
 
     public PayoutResponse(boolean isSuccess, String message, BigDecimal accountBalance, BigDecimal antePayout, BigDecimal dealerPayout, BigDecimal tripsPayout, BigDecimal playPayout, BigDecimal totalPayout) {
-        this.isSuccess = isSuccess;
-        this.message = message;
+        super(isSuccess, message);
         this.accountBalance = accountBalance;
         this.antePayout = antePayout;
         this.dealerPayout = dealerPayout;
