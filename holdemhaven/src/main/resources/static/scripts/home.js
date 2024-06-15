@@ -6,6 +6,7 @@ const registerForm = document.getElementById('registerForm');
 const registerModalBtn = document.getElementById('registerModalBtn');
 const registerButton = document.getElementById('registerButton');
 const cashierButton = document.getElementById('cashierButton');
+const accountButton = document.getElementById('accountButton');
 const logOutButton = document.getElementById('logOutButton');
 const playNowButton = document.getElementById('playNowButton');
 
@@ -219,6 +220,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 //disable navbar buttons
                 document.querySelector("#cashierButton a").classList.add('disabled');
+                document.querySelector("#accountButton a").classList.add('disabled');
                 document.querySelector("#logOutButton a").classList.add('disabled');
 
                 //change the front-end after successful deal
@@ -649,6 +651,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         //enable navbar buttons
         document.querySelector("#cashierButton a").classList.remove('disabled');
+        document.querySelector("#accountButton a").classList.remove('disabled');
         document.querySelector("#logOutButton a").classList.remove('disabled');
 
         //re-add event listeners to the "deal" and "clear" buttons
@@ -920,6 +923,21 @@ async function fetchCashierPage() {
     }
 }
 
+async function fetchAccountPage() {
+    try {
+        const response = await fetch("/account");
+        if(response.ok) {
+            console.log("Successfully fetched account page")
+        }
+        else {
+            console.error("Failed to fetch account page");
+        }
+    } catch (error){
+        console.error("Error ", error);
+    }
+}
+
+
 function updateHeaderUponSignIn(username, accountBalance) {
     const loginContainer = document.getElementById('loginContainer');
     const usernameDisplay = document.getElementById('usernameDisplay');
@@ -994,6 +1012,7 @@ registerButton.addEventListener('click', openRegisterModal);
 signInModalBtn.addEventListener('click', handleSignIn);
 registerModalBtn.addEventListener('click', handleRegister);
 cashierButton.addEventListener('click', fetchCashierPage);
+accountButton.addEventListener('click', fetchAccountPage);
 logOutButton.addEventListener('click', handleLogOut);
 playNowButton.addEventListener('click', openGame);
 //Get session id when user opens the page

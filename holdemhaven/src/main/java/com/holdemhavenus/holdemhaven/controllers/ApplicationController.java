@@ -11,6 +11,11 @@ public class ApplicationController {
         return "redirect:/cashier.html";
     }
 
+    @GetMapping("/account")
+    public String redirectToAccountPage() {
+        return "redirect:/account.html";
+    }
+
     @GetMapping("/home")
     public String redirectToHomePage() {
         return "redirect:/index.html";

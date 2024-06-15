@@ -9,18 +9,16 @@ const submitWithdrawalButton = document.getElementById('submitWithdrawalButton')
 const homeButton = document.getElementById("homeButton");
 
 function displayDepositForm() {
-    if(withdrawForm.style.display === 'block') {
-        withdrawForm.style.display = 'none';
-        withdrawInfo.style.display = 'none';
-    }
+    withdrawForm.style.display = 'none';
+    withdrawInfo.style.display = 'none';
+
     depositForm.style.display = 'block';
     depositInfo.style.display = 'block';
 }
 function displayWithdrawForm() {
-    if(depositForm.style.display === 'block') {
-        depositForm.style.display = 'none';
-        depositInfo.style.display = 'none';
-    }
+    depositForm.style.display = 'none';
+    depositInfo.style.display = 'none';
+
     withdrawForm.style.display = 'block';
     withdrawInfo.style.display = 'block';
 }
@@ -106,7 +104,7 @@ async function fetchSessionAttributes() {
         if(response.ok) {
             const attributes = await response.json();
             document.getElementById('username').textContent = attributes.username;
-            document.getElementById('accountBalance').textContent = attributes.accountBalance
+            document.getElementById('accountBalance').textContent = attributes.accountBalance;
         }
         else {
             console.error("Failed to fetch session attributes.");

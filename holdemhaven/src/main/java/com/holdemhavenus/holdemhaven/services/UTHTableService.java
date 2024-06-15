@@ -9,7 +9,7 @@ import com.holdemhavenus.holdemhaven.responseDTOs.ShowdownResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TableService implements TableGameService {
+public class UTHTableService implements TableGameService {
     public UTHTable getTable() {
         return new UTHTable();
     }

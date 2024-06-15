@@ -7,7 +7,7 @@ import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.GetDealerHandResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.PlayerActionResponse;
 import com.holdemhavenus.holdemhaven.responseDTOs.ShowdownResponse;
-import com.holdemhavenus.holdemhaven.services.TableService;
+import com.holdemhavenus.holdemhaven.services.UTHTableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.*;
 @SessionAttributes("table")
 public class TableController {
     @Autowired
-    private TableService tableService;
+    private UTHTableService UTHTableService;
 
     @ModelAttribute("table")
     public UTHTable table() {
-        return tableService.getTable();
+        return UTHTableService.getTable();
     }
 
     @PostMapping("/new-game")
@@ -35,28 +35,28 @@ public class TableController {
 
     @PostMapping("/deal-hand")
     public DealHandResponse dealHand(@ModelAttribute("table") UTHTable UTHTable) {
-        return tableService.dealHoleCards(UTHTable);
+        return UTHTableService.dealHoleCards(UTHTable);
     }
 
     @PostMapping("/player-action")
     public PlayerActionResponse playerAction(@ModelAttribute("table") UTHTable UTHTable, @RequestBody PlayerActionRequest request) {
         System.out.println(request.getAction());
         System.out.println(request.getBetAmount());
-        return tableService.playerAction(UTHTable, request);
+        return UTHTableService.playerAction(UTHTable, request);
     }
 
     @PostMapping("/showdown")
     public ShowdownResponse showdown(@ModelAttribute("table") UTHTable UTHTable) {
-        return tableService.showdown(UTHTable);
+        return UTHTableService.showdown(UTHTable);
     }
 
     @PostMapping("/get-dealer-hand")
     public GetDealerHandResponse getDealerHand(@ModelAttribute("table") UTHTable UTHTable) {
-        return tableService.getDealerHand(UTHTable);
+        return UTHTableService.getDealerHand(UTHTable);
     }
 
     @PostMapping("/end-hand")
     public void endHand(@ModelAttribute("table") UTHTable UTHTable) {
-        tableService.endHand(UTHTable);
+        UTHTableService.endHand(UTHTable);
     }
 }
