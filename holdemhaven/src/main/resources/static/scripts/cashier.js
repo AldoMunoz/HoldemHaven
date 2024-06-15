@@ -106,7 +106,7 @@ async function fetchSessionAttributes() {
         if(response.ok) {
             const attributes = await response.json();
             document.getElementById('username').textContent = attributes.username;
-            document.getElementById('accountBalance').textContent = attributes.accountBalance.toFixed(2);
+            document.getElementById('accountBalance').textContent = attributes.accountBalance
         }
         else {
             console.error("Failed to fetch session attributes.");
