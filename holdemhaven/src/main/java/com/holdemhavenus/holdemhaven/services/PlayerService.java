@@ -147,7 +147,7 @@ public class PlayerService {
             response = new MoneyTransferResponse(true, "Successful withdrawal", player.getAccountBalance());
         }
         else {
-            response = new MoneyTransferResponse(false, "Unsuccessful withdrawal. Double check the deposit requirements.");
+            response = new MoneyTransferResponse(false, "Unsuccessful withdrawal. Double check the withdrawal requirements.");
         }
         return response;
     }

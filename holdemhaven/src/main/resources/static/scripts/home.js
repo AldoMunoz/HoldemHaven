@@ -944,9 +944,11 @@ async function handleLogOut() {
         });
         if (response.ok) {
             const result = await response.json().catch(() => ({}));
-            if(result.message) {
-                console.log(result.message());
-            }
+
+
+            document.getElementById('gameContainer').style.display = 'none';
+            document.getElementById('startGameContainer').style.display = 'flex';
+
             document.getElementById('loginContainer').style.display = 'block';
             document.getElementById('userInfoContainer').style.setProperty('display', 'none', 'important');
             document.getElementById('playNowButton').setAttribute('disabled', true);

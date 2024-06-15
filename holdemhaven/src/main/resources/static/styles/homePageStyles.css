@@ -132,7 +132,7 @@ body {
 
 .hand-info {
     position: absolute;
-    background-color: red;
+    background-color: #B2290F;
     border: 2px solid lightcoral;
     padding: 0.2vh;
     display: none;
