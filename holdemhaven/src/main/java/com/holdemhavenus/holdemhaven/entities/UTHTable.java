@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
-public class Table {
+public class UTHTable {
     private Deck deck;
     private DeckService deckService;
     private ArrayList<Card> board;
@@ -17,7 +17,7 @@ public class Table {
 
     private String street;
 
-    public Table() {
+    public UTHTable() {
         deck = new Deck();
         deckService = new DeckService();
         board = new ArrayList<>();

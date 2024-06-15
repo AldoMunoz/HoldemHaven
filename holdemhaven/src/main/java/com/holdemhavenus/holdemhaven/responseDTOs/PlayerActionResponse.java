@@ -11,8 +11,6 @@ import java.util.ArrayList;
 @Getter
 @Setter
 public class PlayerActionResponse extends BaseResponse {
-    private boolean isSuccess;
-    private String message;
     private char street;
     private ArrayList<Card> boardCards;
     private Card[] dealerHoleCards;

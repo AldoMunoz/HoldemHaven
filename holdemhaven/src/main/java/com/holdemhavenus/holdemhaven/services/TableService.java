@@ -9,35 +9,37 @@ import com.holdemhavenus.holdemhaven.responseDTOs.ShowdownResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TableService {
-    public Table getTable() {
-        return new Table();
+public class TableService implements TableGameService {
+    public UTHTable getTable() {
+        return new UTHTable();
     }
 
 
     //draws 4 cards from the deck, deals 2 to the player and 2 to the dealer
-    public DealHandResponse dealHoleCards(Table table) {
-        table.getDeckService().shuffleCards(table.getDeck());
+    @Override
+    public DealHandResponse dealHoleCards(UTHTable UTHTable) {
+        UTHTable.getDeckService().shuffleCards(UTHTable.getDeck());
         //deal two cards to the player
-        table.getPlayerHoleCards()[0] = table.getDeckService().drawCard(table.getDeck());
-        table.getPlayerHoleCards()[1] = table.getDeckService().drawCard(table.getDeck());
+        UTHTable.getPlayerHoleCards()[0] = UTHTable.getDeckService().drawCard(UTHTable.getDeck());
+        UTHTable.getPlayerHoleCards()[1] = UTHTable.getDeckService().drawCard(UTHTable.getDeck());
 
         //deal two cards to the dealer
-        table.getDealerHoleCards()[0] = table.getDeckService().drawCard(table.getDeck());
-        table.getDealerHoleCards()[1] = table.getDeckService().drawCard(table.getDeck());
+        UTHTable.getDealerHoleCards()[0] = UTHTable.getDeckService().drawCard(UTHTable.getDeck());
+        UTHTable.getDealerHoleCards()[1] = UTHTable.getDeckService().drawCard(UTHTable.getDeck());
 
         //set the current street to pre-flop
-        table.setStreet("preFlop");
+        UTHTable.setStreet("preFlop");
 
         //send the player cards back to the front-end
-        return new DealHandResponse(table.getPlayerHoleCards());
+        return new DealHandResponse(UTHTable.getPlayerHoleCards());
     }
 
-    public ShowdownResponse showdown(Table table) {
+    @Override
+    public ShowdownResponse showdown(UTHTable UTHTable) {
         HandService handService = new HandService();
 
-        Hand playerHand = new Hand(table.getPlayerHoleCards(), table.getBoard());
-        Hand dealerHand = new Hand(table.getDealerHoleCards(), table.getBoard());
+        Hand playerHand = new Hand(UTHTable.getPlayerHoleCards(), UTHTable.getBoard());
+        Hand dealerHand = new Hand(UTHTable.getDealerHoleCards(), UTHTable.getBoard());
 
         HandRanking playerHandRanking = handService.findHandRanking(playerHand);
         HandRanking dealerHandRanking = handService.findHandRanking(dealerHand);
@@ -67,48 +69,50 @@ public class TableService {
         }
     }
 
-    public GetDealerHandResponse getDealerHand(Table table) {
+    @Override
+    public GetDealerHandResponse getDealerHand(UTHTable UTHTable) {
         HandService handService = new HandService();
 
-        Hand dealerHand = new Hand(table.getDealerHoleCards(), table.getBoard());
+        Hand dealerHand = new Hand(UTHTable.getDealerHoleCards(), UTHTable.getBoard());
         HandRanking dealerHandRanking = handService.findHandRanking(dealerHand);
 
-        return new GetDealerHandResponse(table.getDealerHoleCards(), handService.toString(dealerHand.getFiveCardHand(), dealerHandRanking));
+        return new GetDealerHandResponse(UTHTable.getDealerHoleCards(), handService.toString(dealerHand.getFiveCardHand(), dealerHandRanking));
     }
 
-    public void endHand(Table table) {
-        table.getDeckService().joinDeck(table.getDeck());
-        table.getBoard().clear();
+    @Override
+    public void endHand(UTHTable UTHTable) {
+        UTHTable.getDeckService().joinDeck(UTHTable.getDeck());
+        UTHTable.getBoard().clear();
 
-        table.setPlayerHoleCards(new Card[2]);
-        table.setDealerHoleCards(new Card[2]);
-        table.setStreet("");
+        UTHTable.setPlayerHoleCards(new Card[2]);
+        UTHTable.setDealerHoleCards(new Card[2]);
+        UTHTable.setStreet("");
     }
 
-    public PlayerActionResponse playerAction(Table table, PlayerActionRequest request) {
+    public PlayerActionResponse playerAction(UTHTable UTHTable, PlayerActionRequest request) {
         PlayerActionResponse response = new PlayerActionResponse();
-        if(table.getStreet().equals("preFlop")) {
+        if(UTHTable.getStreet().equals("preFlop")) {
             response.setStreet('f');
-            return preFlopAction(table, request, response);
+            return preFlopAction(UTHTable, request, response);
         }
-        else if(table.getStreet().equals("flop")) {
+        else if(UTHTable.getStreet().equals("flop")) {
             response.setStreet('r');
-            return flopAction(table, request, response);
+            return flopAction(UTHTable, request, response);
         }
-        else if(table.getStreet().equals("river")) {
+        else if(UTHTable.getStreet().equals("river")) {
             response.setStreet('e');
-            return riverAction(table, request, response);
+            return riverAction(UTHTable, request, response);
         }
         else {
             return new PlayerActionResponse(false, "Error occurred, street not set properly.");
         }
     }
 
-    private PlayerActionResponse preFlopAction(Table table, PlayerActionRequest request, PlayerActionResponse response) {
+    private PlayerActionResponse preFlopAction(UTHTable UTHTable, PlayerActionRequest request, PlayerActionResponse response) {
         //deal flop
-        Card boardCard1 = table.getDeckService().drawCard(table.getDeck());
-        Card boardCard2 = table.getDeckService().drawCard(table.getDeck());
-        Card boardCard3 = table.getDeckService().drawCard(table.getDeck());
+        Card boardCard1 = UTHTable.getDeckService().drawCard(UTHTable.getDeck());
+        Card boardCard2 = UTHTable.getDeckService().drawCard(UTHTable.getDeck());
+        Card boardCard3 = UTHTable.getDeckService().drawCard(UTHTable.getDeck());
 
         //add flop cards to the response
         response.getBoardCards().add(boardCard1);
@@ -116,17 +120,17 @@ public class TableService {
         response.getBoardCards().add(boardCard3);
 
         //add cards to the table board
-        table.getBoard().add(boardCard1);
-        table.getBoard().add(boardCard2);
-        table.getBoard().add(boardCard3);
+        UTHTable.getBoard().add(boardCard1);
+        UTHTable.getBoard().add(boardCard2);
+        UTHTable.getBoard().add(boardCard3);
 
         if (request.getAction() == 'B') {
-            return flopAction(table, request, response);
+            return flopAction(UTHTable, request, response);
         }
         else if (request.getAction() == 'C') {
             response.setSuccess(true);
             response.setMessage("Dealt flop.");
-            table.setStreet("flop");
+            UTHTable.setStreet("flop");
 
             return response;
         }
@@ -135,27 +139,27 @@ public class TableService {
         }
     }
 
-    private PlayerActionResponse flopAction(Table table, PlayerActionRequest request, PlayerActionResponse response) {
+    private PlayerActionResponse flopAction(UTHTable UTHTable, PlayerActionRequest request, PlayerActionResponse response) {
         //deal turn and river
-        Card boardCard1 = table.getDeckService().drawCard(table.getDeck());
-        Card boardCard2 = table.getDeckService().drawCard(table.getDeck());
+        Card boardCard1 = UTHTable.getDeckService().drawCard(UTHTable.getDeck());
+        Card boardCard2 = UTHTable.getDeckService().drawCard(UTHTable.getDeck());
 
         //add turn and river cards to the response
         response.getBoardCards().add(boardCard1);
         response.getBoardCards().add(boardCard2);
 
         //add cards to the table board
-        table.getBoard().add(boardCard1);
-        table.getBoard().add(boardCard2);
+        UTHTable.getBoard().add(boardCard1);
+        UTHTable.getBoard().add(boardCard2);
 
         if (request.getAction() == 'B') {
-            return riverAction(table, request, response);
+            return riverAction(UTHTable, request, response);
         }
         else if (request.getAction() == 'C') {
             response.setSuccess(true);
             response.setMessage("Dealt turn and river.");
 
-            table.setStreet("river");
+            UTHTable.setStreet("river");
 
             return response;
         }
@@ -164,9 +168,9 @@ public class TableService {
         }
     }
 
-    private PlayerActionResponse riverAction(Table table, PlayerActionRequest request, PlayerActionResponse response) {
+    private PlayerActionResponse riverAction(UTHTable UTHTable, PlayerActionRequest request, PlayerActionResponse response) {
         if (request.getAction() == 'B') {
-            response.setDealerHoleCards(table.getDealerHoleCards());
+            response.setDealerHoleCards(UTHTable.getDealerHoleCards());
             response.setSuccess(true);
             response.setMessage("Successful runout.");
             return response;
@@ -175,7 +179,7 @@ public class TableService {
             response.setSuccess(true);
             response.setMessage("Folded hand.");
 
-            table.setStreet("");
+            UTHTable.setStreet("");
 
             return response;
         }

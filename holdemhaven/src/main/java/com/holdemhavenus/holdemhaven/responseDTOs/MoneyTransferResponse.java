@@ -9,8 +9,6 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class MoneyTransferResponse extends BaseResponse {
-    private boolean isSuccess;
-    private String message;
     private BigDecimal amount;
 
     public MoneyTransferResponse(boolean isSuccess, String message, BigDecimal amount) {

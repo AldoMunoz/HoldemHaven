@@ -8,8 +8,6 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class PayoutResponse extends BaseResponse {
-    private boolean isSuccess;
-    private String message;
     private BigDecimal antePayout;
     private BigDecimal dealerPayout;
     private BigDecimal tripsPayout;
