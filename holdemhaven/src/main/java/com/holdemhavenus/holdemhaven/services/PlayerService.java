@@ -235,7 +235,7 @@ public class PlayerService {
             player.setAccountBalance(player.getAccountBalance().add(payoutSum));
             playerRepository.save(player);
 
-            return new PayoutResponse(true, "Successful payout.", player.getAccountBalance(), antePayout, dealerPayout, tripsPayout, playPayout, payoutSum);
+            return new PayoutResponse(true, "Successful payout.", player.getId(), player.getAccountBalance(), antePayout, dealerPayout, tripsPayout, playPayout, payoutSum);
         }
         else {
             return new PayoutResponse(false, "Error, player not logged in");

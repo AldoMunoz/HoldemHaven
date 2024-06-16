@@ -3,10 +3,8 @@ package com.holdemhavenus.holdemhaven.controllers;
 
 import com.holdemhavenus.holdemhaven.entities.UTHTable;
 import com.holdemhavenus.holdemhaven.requestDTOs.PlayerActionRequest;
-import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
-import com.holdemhavenus.holdemhaven.responseDTOs.GetDealerHandResponse;
-import com.holdemhavenus.holdemhaven.responseDTOs.PlayerActionResponse;
-import com.holdemhavenus.holdemhaven.responseDTOs.ShowdownResponse;
+import com.holdemhavenus.holdemhaven.requestDTOs.SaveHandRequest;
+import com.holdemhavenus.holdemhaven.responseDTOs.*;
 import com.holdemhavenus.holdemhaven.services.UTHTableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +51,11 @@ public class TableController {
     @PostMapping("/get-dealer-hand")
     public GetDealerHandResponse getDealerHand(@ModelAttribute("table") UTHTable UTHTable) {
         return UTHTableService.getDealerHand(UTHTable);
+    }
+
+    @PostMapping("/save-hand")
+    public SaveHandResponse saveHand(@ModelAttribute("table") UTHTable UTHTable, @RequestBody SaveHandRequest request) {
+        return UTHTableService.saveHand(UTHTable, request);
     }
 
     @PostMapping("/end-hand")

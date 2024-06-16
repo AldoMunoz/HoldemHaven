@@ -21,6 +21,5 @@ public class Player {
     private String email;
     private String username;
     private String password;
-
     private BigDecimal accountBalance;
 }

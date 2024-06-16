@@ -14,14 +14,16 @@ public class PayoutResponse extends BaseResponse {
     private BigDecimal playPayout;
     private BigDecimal totalPayout;
     private BigDecimal accountBalance;
+    private Long playerId;
 
     public PayoutResponse(boolean isSuccess, String message) {
         super(isSuccess, message);
     }
 
-    public PayoutResponse(boolean isSuccess, String message, BigDecimal accountBalance, BigDecimal antePayout, BigDecimal dealerPayout, BigDecimal tripsPayout, BigDecimal playPayout, BigDecimal totalPayout) {
+    public PayoutResponse(boolean isSuccess, String message, Long playerId, BigDecimal accountBalance, BigDecimal antePayout, BigDecimal dealerPayout, BigDecimal tripsPayout, BigDecimal playPayout, BigDecimal totalPayout) {
         super(isSuccess, message);
         this.accountBalance = accountBalance;
+        this.playerId = playerId;
         this.antePayout = antePayout;
         this.dealerPayout = dealerPayout;
         this.tripsPayout = tripsPayout;

@@ -371,6 +371,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 if(data.success) {
+                    console.log("RIGHER", data);
                     //reveal the rest of the board, hole cards, and hand result, with timeout for dramatic effect
                     const timeouts = runOutBoard(data.boardCards, data.street);
                     setTimeout(() => {
@@ -404,6 +405,9 @@ document.addEventListener("DOMContentLoaded", function() {
             dealTurnAndRiver(cards);
             return {timeout1: 2000, timeout2: 4000}
         }
+        else if(street === "e") {
+            return { timeout1: 0, timeout2: 2000}
+        }
         else {
             console.error("Street does not exist.");
         }
@@ -427,13 +431,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
         //finds the correct image source based on the bet multiplier (chip count) and chip value
         if(anteBetAmount === 1) {
-            chipImageSource = `/images/chip-stacks/${chipCount}x_one_dollar_chip.png`;
+            if(chipCount === 1) chipImageSource = `/images/chips/one_dollar_chip.png`
+            else chipImageSource = `/images/chip-stacks/${chipCount}x_one_dollar_chip.png`;
         }
         else if(anteBetAmount === 5) {
-            chipImageSource = `/images/chip-stacks/${chipCount}x_five_dollar_chip.png`;
+            if(chipCount === 1) chipImageSource = `/images/chips/five_dollar_chip.png`
+            else chipImageSource = `/images/chip-stacks/${chipCount}x_five_dollar_chip.png`;
         }
         else if (anteBetAmount === 25) {
-            chipImageSource = `/images/chip-stacks/${chipCount}x_twenty_five_dollar_chip.png`;
+            if(chipCount === 1) chipImageSource = `/images/chips/twenty_five_dollar_chip.png`
+            else chipImageSource = `/images/chip-stacks/${chipCount}x_twenty_five_dollar_chip.png`;
         }
         else {
             console.error("Ante bet amount not set.")
@@ -490,11 +497,15 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 //if payout determination is successful:
                 if(data.success) {
+                    console.log("HERE", data);
+
                     //display the dealer's hand
                     displayDealerHand(dealerHandToString);
                     //display the player's hand and the payout details
                     displayPlayerHandAndPayoutDetails(data.totalPayout, data.antePayout, data.dealerPayout, data.playPayout,
                         data.tripsPayout, playerHandToString);
+                    //send required information to table to save the hand
+                    saveHandData(data.playerId, winner, data.totalPayout);
                     //display the end hand message after timeout
                     setTimeout(() => {
                         displayEndHandMessage(data.totalPayout);
@@ -558,6 +569,38 @@ document.addEventListener("DOMContentLoaded", function() {
 
         playerHandContainer.style.display = 'flex';
     }
+
+    function saveHandData(playerId, winner, playerPayout) {
+        const saveHandRequest = {
+            playerId: playerId,
+            anteBet: anteBetAmount,
+            playBet: playBetAmount,
+            tripsBet: tripsBetAmount,
+            winner: winner,
+            playerPayout: playerPayout
+        }
+
+        fetch('/table/save-hand', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(saveHandRequest)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    console.log(data.message);
+                }
+                else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    }
+
 
     //displays message with how much the user won
     //displays button that clears the table and starts the next hand
@@ -769,6 +812,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 revealDealerHoleCards(data.dealerHoleCards);
                 //display the dealer's hand ranking
                 displayDealerHand(data.dealerHandToString);
+                //send info to save hand data in the database
+                //TODO saveHandData(data.playerId, d, 0);
                 //display the end hand message after timeout
                 setTimeout(() => {
                     displayEndHandMessage(0);

@@ -1,19 +1,23 @@
 package com.holdemhavenus.holdemhaven.services;
 
 import com.holdemhavenus.holdemhaven.entities.*;
+import com.holdemhavenus.holdemhaven.repositories.DBHandRepository;
 import com.holdemhavenus.holdemhaven.requestDTOs.PlayerActionRequest;
-import com.holdemhavenus.holdemhaven.responseDTOs.DealHandResponse;
-import com.holdemhavenus.holdemhaven.responseDTOs.GetDealerHandResponse;
-import com.holdemhavenus.holdemhaven.responseDTOs.PlayerActionResponse;
-import com.holdemhavenus.holdemhaven.responseDTOs.ShowdownResponse;
+import com.holdemhavenus.holdemhaven.requestDTOs.SaveHandRequest;
+import com.holdemhavenus.holdemhaven.responseDTOs.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 
 @Service
 public class UTHTableService implements TableGameService {
+    @Autowired
+    private DBHandRepository dbHandRepository;
+
     public UTHTable getTable() {
         return new UTHTable();
     }
-
 
     //draws 4 cards from the deck, deals 2 to the player and 2 to the dealer
     @Override
@@ -106,6 +110,38 @@ public class UTHTableService implements TableGameService {
         else {
             return new PlayerActionResponse(false, "Error occurred, street not set properly.");
         }
+    }
+
+    public SaveHandResponse saveHand(UTHTable UTHTable, SaveHandRequest request) {
+        try {
+            DBHand dbHand = new DBHand();
+            dbHand.setPlayerId(request.getPlayerId());
+            dbHand.setAnteBet(request.getAnteBet());
+            dbHand.setDealerBet(request.getAnteBet());
+            dbHand.setTripsBet(request.getTripsBet());
+            dbHand.setPlayBet(request.getPlayBet());
+            dbHand.setResult(request.getWinner());
+            dbHand.setPlayerPayout(request.getPlayerPayout());
+            dbHand.setPlayerHoleCards(UTHTable.getPlayerHoleCards()[0].toString()+UTHTable.getPlayerHoleCards()[1].toString());
+            dbHand.setDealerHoleCards(UTHTable.getDealerHoleCards()[0].toString()+UTHTable.getDealerHoleCards()[1].toString());
+            dbHand.setBoardCards(boardCardsToString(UTHTable.getBoard()));
+
+            dbHandRepository.save(dbHand);
+
+            return new SaveHandResponse(true, "Successfully added hand to the database");
+        } catch (Exception e) {
+            return new SaveHandResponse(false, "Something went wrong saving the hand to the database");
+        }
+    }
+
+    private String boardCardsToString(ArrayList<Card> cards) {
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < cards.size(); i++) {
+            result.append(cards.get(i).toString());
+        }
+
+        return result.toString();
     }
 
     private PlayerActionResponse preFlopAction(UTHTable UTHTable, PlayerActionRequest request, PlayerActionResponse response) {
