@@ -8,13 +8,13 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
+//Entity used to store all necessary information for operating a game of Ultimate Texas Hold'em
 public class UTHTable {
     private Deck deck;
     private DeckService deckService;
     private ArrayList<Card> board;
     private Card[] dealerHoleCards;
     private Card[] playerHoleCards;
-
     private String street;
 
     public UTHTable() {
@@ -23,7 +23,6 @@ public class UTHTable {
         board = new ArrayList<>();
         dealerHoleCards = new Card[2];
         playerHoleCards = new Card[2];
-
         street = "";
     }
 }

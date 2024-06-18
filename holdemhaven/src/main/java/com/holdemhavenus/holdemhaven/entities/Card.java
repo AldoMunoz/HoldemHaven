@@ -1,5 +1,9 @@
 package com.holdemhavenus.holdemhaven.entities;
 
+import lombok.Getter;
+
+//Enumerable containing all the cards, their values, suits, and image paths
+@Getter
 public enum Card {
     TWO_S(2, 's', "/images/cards/TWO_S.png"),
     TWO_C(2, 'c', "/images/cards/TWO_C.png"),
@@ -62,18 +66,6 @@ public enum Card {
         this.val = val;
         this.suit = suit;
         this.imagePath = imagePath;
-    }
-
-    public int getVal() {
-        return val;
-    }
-
-    public char getSuit() {
-        return suit;
-    }
-
-    public String getImagePath() {
-        return imagePath;
     }
 
     @Override

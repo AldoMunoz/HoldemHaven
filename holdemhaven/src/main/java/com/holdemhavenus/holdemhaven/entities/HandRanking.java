@@ -1,5 +1,9 @@
 package com.holdemhavenus.holdemhaven.entities;
 
+import lombok.Getter;
+
+//Enumerable containing the ten major hand rankings in poker
+@Getter
 public enum HandRanking {
     ROYAL_FLUSH(9, "Royal Flush"),
     STRAIGHT_FLUSH(8, "High Straight Flush"),
@@ -18,13 +22,5 @@ public enum HandRanking {
     HandRanking (int ranking, String hand) {
         this.ranking = ranking;
         this.hand = hand;
-    }
-
-    public int getRanking() {
-        return ranking;
-    }
-
-    public String getHand () {
-        return hand;
     }
 }

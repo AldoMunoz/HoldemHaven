@@ -7,17 +7,15 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
+//Entity used to build the find and represent the best five card hand using a player's hole cards and the community cards
 public class Hand {
-    private Card[] playerCards;
+    private Card[] holeCards;
     private ArrayList<Card> communityCards;
-    //enum with the hand strength, x High to Royal
     private HandRanking handRanking;
-    //5 cards that make up the players hand
     private Card[] fiveCardHand;
 
-    //a board and a hand are passed when creating a new hand
-    public Hand(Card[] playerCards, ArrayList<Card> communityCards) {
-        this.playerCards = playerCards;
+    public Hand(Card[] holeCards, ArrayList<Card> communityCards) {
+        this.holeCards = holeCards;
         this.communityCards = communityCards;
         this.fiveCardHand = new Card[5];
     }

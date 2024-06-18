@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
+//Entity used to store all relevant player (user) information in the database
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

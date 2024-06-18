@@ -12,9 +12,9 @@ import java.util.Arrays;
 public class HandService {
     public HandRanking findHandRanking(Hand hand) {
         //Creates array of cards, adds player cards and community cards to the array
-        Card[] cards = new Card[hand.getPlayerCards().length+hand.getCommunityCards().size()];
-        cards[0] = hand.getPlayerCards()[0];
-        cards[1] = hand.getPlayerCards()[1];
+        Card[] cards = new Card[hand.getHoleCards().length+hand.getCommunityCards().size()];
+        cards[0] = hand.getHoleCards()[0];
+        cards[1] = hand.getHoleCards()[1];
         for (int i = 2; i < hand.getCommunityCards().size()+2; i++) {
             cards[i] = hand.getCommunityCards().get(i-2);
         }

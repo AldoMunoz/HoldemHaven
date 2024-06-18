@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
+//Database hand entity
+//Contains all info that needs to be persisted in order to accurately describe hand action
 public class DBHand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
