@@ -1,6 +1,7 @@
 package com.holdemhavenus.holdemhaven.controllers;
 
 
+import com.holdemhavenus.holdemhaven.entities.DBHand;
 import com.holdemhavenus.holdemhaven.entities.UTHTable;
 import com.holdemhavenus.holdemhaven.requestDTOs.PlayerActionRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.SaveHandRequest;
@@ -10,9 +11,13 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/table")
+//Each table has its own session attribute "Table", which is a Table object
 @SessionAttributes("table")
+//Rest Controller used to call and return Table Service methods from the front-end to the back-end
 public class UTHTableController {
     @Autowired
     private UTHTableService UTHTableService;
@@ -20,11 +25,6 @@ public class UTHTableController {
     @ModelAttribute("table")
     public UTHTable table() {
         return UTHTableService.getTable();
-    }
-
-    @PostMapping("/new-game")
-    public String startNewGame(@ModelAttribute("table") UTHTable UTHTable) {
-        return "New game started";
     }
 
     @GetMapping
@@ -47,7 +47,8 @@ public class UTHTableController {
         PlayerActionResponse paResponse = UTHTableService.playerAction(UTHTable, request);
         ShowdownResponse sResponse = UTHTableService.showdown(UTHTable);
 
-
+        //when a player folds river, the playerAction and showdown are both called
+        //their data is combined into FoldPlayerAction Response and sent to the front-end
         return new FoldPlayerActionResponse(paResponse.isSuccess(), paResponse.getMessage(), paResponse.getDealerHoleCards(),
                 sResponse.getWinner(), sResponse.getPlayerHandRanking(), sResponse.getDealerHandRanking(), sResponse.getPlayerHandToString(), sResponse.getDealerHandToString());
     }
@@ -67,9 +68,8 @@ public class UTHTableController {
         UTHTableService.endHand(UTHTable);
     }
 
-    @PostMapping("/table/get-hand-history")
-    public void getHandHistory(@ModelAttribute("table") UTHTable UTHTable, HttpSession session) {
-        System.out.println(session.getAttribute("playerId"));
-        //UTHTableService.getHandHistory(UTHTable, session.getAttribute("playerId"));
+    @PostMapping("/get-hand-history")
+    public ArrayList<DBHand> getHandHistory(@ModelAttribute("table") UTHTable UTHTable, HttpSession session) {
+        return UTHTableService.getHandHistory((Long) session.getAttribute("playerId"));
     }
 }

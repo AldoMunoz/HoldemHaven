@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/player")
+//Rest Controller used to call and return Player Service methods from the front-end to the back-end
 public class PlayerController {
     @Autowired
     private PlayerService playerService;
@@ -23,15 +24,17 @@ public class PlayerController {
         return playerService.verifyRegisterPlayerInformation(request);
     }
 
-    @PostMapping("/signIn")
+    @PostMapping("/sign-in")
     public LoginPlayerResponse signInPlayer(@RequestBody LoginPlayerRequest request, HttpSession session) {
         LoginPlayerResponse response = playerService.verifySignInCredentials(request);
+
         if(response.isSuccess()) {
+            //is user successfully logged in, save player's username, accountBalance, and id in the session information
             session.setAttribute("username", response.getPlayerUsername());
             session.setAttribute("accountBalance", response.getAccountBalance());
             session.setAttribute("playerId", response.getPlayerId());
-            System.out.println("success session attributes");
         }
+
         return response;
     }
 
@@ -39,14 +42,13 @@ public class PlayerController {
     public MoneyTransferResponse deposit(@RequestBody MoneyTransferRequest request, HttpSession session) {
         String playerUsername = getUsername(session);
 
-        //Handle case where user is not logged in
         if (playerUsername == null)
             return new MoneyTransferResponse(false, "User not logged in or session expired");
 
         MoneyTransferResponse response = playerService.verifyDeposit(request, playerUsername);
-        if(response.isSuccess()) {
+        if(response.isSuccess())
             session.setAttribute("accountBalance", response.getAmount());
-        }
+
         return response;
     }
 
@@ -64,14 +66,13 @@ public class PlayerController {
         return response;
     }
 
-    @PostMapping("/changeUsername")
+    @PostMapping("/change-username")
     public ChangeUsernameResponse changeUsername(@RequestBody String newUsername, HttpSession session) {
         String playerUsername = getUsername(session);
         newUsername = newUsername.replaceAll("\"", "");
 
-        if(playerUsername == null) {
+        if(playerUsername == null)
             return new ChangeUsernameResponse(false, "User not logged in or session expired.");
-        }
 
         ChangeUsernameResponse response = playerService.changeUsername(playerUsername, newUsername);
         if(response.isSuccess())
@@ -80,37 +81,33 @@ public class PlayerController {
         return response;
     }
 
-    @PostMapping("/changePassword")
+    @PostMapping("/change-password")
     public ChangePasswordResponse changePassword(@RequestBody ChangePasswordRequest request, HttpSession session) {
         String playerUsername = getUsername(session);
 
-        if(playerUsername == null) {
+        if(playerUsername == null)
             return new ChangePasswordResponse(false, "User not logged in or session expired.");
-        }
 
         return playerService.changePassword(request, playerUsername);
     }
 
-    @PostMapping("/deleteAccount")
+    @PostMapping("/delete-account")
     public DeleteAccountResponse deleteAccount(HttpSession session) {
         String playerUsername = getUsername(session);
 
-        if(playerUsername == null) {
+        if(playerUsername == null)
             return new DeleteAccountResponse(false, "User not logged in or session expired.");
-        }
 
         return playerService.deleteAccount(playerUsername);
     }
 
 
-    @PostMapping("/verifyBet")
+    @PostMapping("/verify-bet")
     public VerifyBetResponse verifyBet(@RequestBody VerifyBetRequest request, HttpSession session) {
         String playerUsername = getUsername(session);
 
-        if(playerUsername == null) {
+        if(playerUsername == null)
             return new VerifyBetResponse(false, "User not logged in or session expired.");
-        }
-
 
         VerifyBetResponse response = playerService.verifyBet(request, playerUsername);
         if(response.isSuccess())
@@ -119,13 +116,12 @@ public class PlayerController {
         return response;
     }
 
-    @PostMapping("/verifyPlay")
+    @PostMapping("/verify-play")
     public VerifyBetResponse verifyPlay(@RequestBody BigDecimal betAmount, HttpSession session) {
         String playerUsername = getUsername(session);
 
-        if(playerUsername == null) {
+        if(playerUsername == null)
             return new VerifyBetResponse(false, "User not logged in or session expired.");
-        }
 
         VerifyBetResponse response = playerService.verifyPlay(betAmount, playerUsername);
         if(response.isSuccess())
@@ -138,9 +134,8 @@ public class PlayerController {
     public PayoutResponse payout(@RequestBody PayoutRequest payoutRequest, HttpSession session) {
         String playerUsername = getUsername(session);
 
-        if(playerUsername == null) {
+        if(playerUsername == null)
             return new PayoutResponse(false, "User not logged in or session expired.");
-        }
 
         PayoutResponse response = playerService.determinePayout(payoutRequest, playerUsername);
         if(response.isSuccess())
@@ -149,13 +144,12 @@ public class PlayerController {
         return response;
     }
 
-    @PostMapping("/foldPayout")
+    @PostMapping("/fold-payout")
     public PayoutResponse foldPayout(@RequestBody FoldPayoutRequest request, HttpSession session) {
         String playerUsername = getUsername(session);
 
-        if(playerUsername == null) {
+        if(playerUsername == null)
             return new PayoutResponse(false, "User not logged in or session expired.");
-        }
 
         PayoutResponse response = playerService.determineFoldPayout(request, playerUsername);
 
@@ -165,6 +159,7 @@ public class PlayerController {
         return response;
     }
 
+    //method used to retrieve player username from session attributes
     private String getUsername(HttpSession session) {
         return (String) session.getAttribute("username");
     }

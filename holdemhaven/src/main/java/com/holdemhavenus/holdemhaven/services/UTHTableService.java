@@ -116,6 +116,10 @@ public class UTHTableService implements TableGameService {
             dbHand.setDealerHoleCards(UTHTable.getDealerHoleCards()[0].toString()+UTHTable.getDealerHoleCards()[1].toString());
             dbHand.setBoardCards(boardCardsToString(UTHTable.getBoard()));
 
+            if(request.getWinner().equals("d")) dbHand.setResult("Dealer Wins");
+            else if(request.getWinner().equals("p")) dbHand.setResult("Player Wins");
+            else dbHand.setResult("Tie");
+
             dbHandRepository.save(dbHand);
 
             return new SaveHandResponse(true, "Successfully added hand to the database");
@@ -124,8 +128,8 @@ public class UTHTableService implements TableGameService {
         }
     }
 
-    public ArrayList<DBHand> getHandHistory(UTHTable UTHTable, Long playerId) {
-        return null;
+    public ArrayList<DBHand> getHandHistory(Long playerId) {
+        return dbHandRepository.find100LatestHands(playerId);
     }
 
     private String boardCardsToString(ArrayList<Card> cards) {

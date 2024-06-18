@@ -3,6 +3,7 @@ const handHistory = document.getElementById('handHistory');
 const changeUsernameButton = document.getElementById('changeUsernameButton');
 const changePasswordButton = document.getElementById('changePasswordButton');
 const deleteAccountButton = document.getElementById('deleteAccountButton');
+const handHistoryTable = document.getElementById('handHistoryTable');
 const changeUsernameForm = document.getElementById('changeUsernameForm');
 const changePasswordForm = document.getElementById('changePasswordForm');
 const deleteAccountForm = document.getElementById('deleteAccountForm');
@@ -13,18 +14,24 @@ const submitDeleteAccountButton = document.getElementById('submitDeleteAccountBu
 function displayChangeUsernameForm() {
     changePasswordForm.style.display = 'none';
     deleteAccountForm.style.display = 'none';
+    handHistoryTable.style.display = 'none';
+
     changeUsernameForm.style.display = 'block';
 }
 
 function displayChangePasswordForm() {
     changeUsernameForm.style.display = 'none';
     deleteAccountForm.style.display = 'none';
+    handHistoryTable.style.display = 'none';
+
     changePasswordForm.style.display = 'block';
 }
 
 function displayDeleteAccountForm() {
     changeUsernameForm.style.display = 'none';
     changePasswordForm.style.display = 'none';
+    handHistoryTable.style.display = 'none';
+
     deleteAccountForm.style.display = 'block';
 }
 
@@ -37,7 +44,7 @@ function getHandHistory() {
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
+            displayHandHistory(data);
         })
         .catch(error => {
             console.error("Fetch error:", error);
@@ -48,10 +55,40 @@ function getHandHistory() {
     //call function that displays last 100 hand history in a table
 }
 
+function displayHandHistory(data) {
+    changePasswordForm.style.display = 'none';
+    deleteAccountForm.style.display = 'none';
+    changeUsernameForm.style.display = 'none';
+
+    const tableBody = document.getElementById('handHistoryTableBody');
+    tableBody.innerHTML = '';
+
+    data.forEach(hand => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${hand.handId}</td>
+            <td>${hand.anteBet}</td>
+            <td>${hand.dealerBet}</td>
+            <td>${hand.playBet}</td>
+            <td>${hand.tripsBet}</td>
+            <td>${hand.boardCards}</td>
+            <td>${hand.playerHoleCards}</td>
+            <td>${hand.dealerHoleCards}</td>
+            <td>${hand.result}</td>
+            <td>${hand.playerPayout}</td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+
+    handHistoryTable.style.display = 'block';
+}
+
 async function onChangeUsername() {
     const newUsername = document.getElementById('newUsername').value;
 
-    fetch('/api/changeUsername', {
+    fetch('/player/change-username', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -80,7 +117,7 @@ function onChangePassword() {
         confirmNewPassword: document.getElementById('confirmNewPassword').value
     }
 
-    fetch('/api/changePassword', {
+    fetch('/player/change-password', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -117,7 +154,7 @@ function onChangePassword() {
 }
 
 function onDeleteAccount() {
-    fetch('/api/deleteAccount', {
+    fetch('/player/delete-account', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -154,7 +191,7 @@ function onDeleteAccount() {
 }
 async function fetchSessionAttributes() {
     try {
-        const response = await fetch("/session-username-accBal");
+        const response = await fetch("/get-player-info");
         if(response.ok) {
             const attributes = await response.json();
             document.getElementById('username').textContent = attributes.username;

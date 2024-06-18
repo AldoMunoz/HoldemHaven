@@ -10,15 +10,8 @@ import java.util.Map;
 
 @RestController
 public class SessionController {
-
-    @GetMapping("/session-info")
-    public String getSessionId(HttpSession session) {
-        System.out.println("Returning Session ID: " + session.getAttribute("sessionId"));
-        return (String) session.getAttribute("sessionId");
-    }
-
-    @GetMapping("/session-username-accBal")
-    public Map<String, Object> getUsernameAndAccountBalance(HttpSession session) {
+    @GetMapping("/get-player-info")
+    public Map<String, Object> getPlayerInfo(HttpSession session) {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("username", session.getAttribute("username"));
         attributes.put("accountBalance", session.getAttribute("accountBalance"));
@@ -29,9 +22,13 @@ public class SessionController {
 
     @PostMapping("/logout")
     public Map<String, String> logout(HttpSession session) {
+        //ends the session upon logout
         session.invalidate();
+
+        //resets fields
         Map<String, String> response = new HashMap<>();
         response.put("message", "Logged out successfully");
+
         return response;
     }
 }

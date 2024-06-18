@@ -35,7 +35,7 @@ function onSubmitDeposit() {
         amount: depositAmount
     };
 
-    fetch('/api/deposit', {
+    fetch('/player/deposit', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -69,7 +69,7 @@ function onSubmitWithdrawal() {
         amount: withdrawAmount
     };
 
-    fetch('/api/withdraw', {
+    fetch('/player/withdraw', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -93,7 +93,7 @@ function onSubmitWithdrawal() {
 
 async function fetchSessionAttributes() {
     try {
-        const response = await fetch("/session-username-accBal");
+        const response = await fetch("/get-player-info");
         if(response.ok) {
             const attributes = await response.json();
             document.getElementById('username').textContent = attributes.username;

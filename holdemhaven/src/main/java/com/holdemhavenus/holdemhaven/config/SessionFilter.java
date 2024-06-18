@@ -14,20 +14,13 @@ public class SessionFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {}
 
     @Override
+    //creates HTTP session and passes requests via the filter
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpSession session = httpRequest.getSession();
 
         if (session.getAttribute("sessionId") == null) {
-            String sessionId = UUID.randomUUID().toString();
             session.setAttribute("sessionId", UUID.randomUUID().toString());
-            System.out.println("Session ID generated and stored: " + sessionId);
-        }
-        else {
-            System.out.println("Existing Session ID: " +  session.getAttribute("sessionId"));
-            System.out.println(session.getAttribute("username"));
-            System.out.println(session.getAttribute("accountBalance"));
-            System.out.println(session.getAttribute("playerId"));
         }
 
         chain.doFilter(request, response);

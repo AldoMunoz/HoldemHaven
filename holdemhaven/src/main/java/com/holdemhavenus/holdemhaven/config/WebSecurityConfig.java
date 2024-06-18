@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -18,7 +17,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class WebSecurityConfig {
     @Bean
     //Basic HTTP Configuration
-    //Allows public access to specified endpoints, form-based-login, and HTTP authentication
+    //Allows public access to all endpoints, form-based-login, and HTTP authentication
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -35,7 +34,7 @@ public class WebSecurityConfig {
 
 
     @Bean
-    //Initializes and returns a password encoder
+    //Initializes and returns a password encoder, used for encrypting passwords in the database
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

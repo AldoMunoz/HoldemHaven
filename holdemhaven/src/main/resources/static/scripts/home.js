@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         //verify the bet is valid
-        fetch('/api/verifyBet', {
+        fetch('/player/verify-bet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -322,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function() {
     //logic after 4x, 3x, 2x, and 1x bet button click
     function verifyPlayBet(betMultiplier) {
         //sends request to Player Service to verify if play bet is valid
-        fetch('/api/verifyPlay', {
+        fetch('/player/verify-play', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -486,7 +486,7 @@ document.addEventListener("DOMContentLoaded", function() {
             dealerHandRanking: dealerHandRanking
         }
 
-        fetch('/api/payout', {
+        fetch('/player/payout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -803,7 +803,7 @@ document.addEventListener("DOMContentLoaded", function() {
             playerHandRanking: playerHandRanking
         }
 
-        fetch('/api/foldPayout', {
+        fetch('/player/fold-payout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -833,7 +833,7 @@ document.addEventListener("DOMContentLoaded", function() {
 //fetches the session ID
 async function fetchSessionInformation() {
     try {
-        const response = await fetch("/session-username-accBal");
+        const response = await fetch("/get-player-info");
         if(response.ok) {
             const attributes = await response.json();
             if(attributes.username != null && attributes.accountBalance != null) {
@@ -878,7 +878,7 @@ function handleSignIn() {
         password: document.getElementById('password').value
     };
 
-    fetch('/api/signIn', {
+    fetch('/player/sign-in', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -925,7 +925,7 @@ function handleRegister() {
         confirmPassword: document.getElementById('newConfirmPassword').value
     };
 
-    fetch('/api/register', {
+    fetch('/player/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -1027,28 +1027,6 @@ async function handleLogOut() {
 function openGame() {
     document.getElementById('startGameContainer').style.display = 'none';
     document.getElementById('gameContainer').style.display = 'block';
-
-
-    //instantiate table in the back-end
-    fetch('/table/new-game', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({})
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
-        .then(data => {
-            console.log(data);
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
 }
 
 //Event listeners
