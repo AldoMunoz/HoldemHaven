@@ -1,4 +1,5 @@
 const homeButton = document.getElementById("homeButton");
+const handHistory = document.getElementById('handHistory');
 const changeUsernameButton = document.getElementById('changeUsernameButton');
 const changePasswordButton = document.getElementById('changePasswordButton');
 const deleteAccountButton = document.getElementById('deleteAccountButton');
@@ -25,6 +26,26 @@ function displayDeleteAccountForm() {
     changeUsernameForm.style.display = 'none';
     changePasswordForm.style.display = 'none';
     deleteAccountForm.style.display = 'block';
+}
+
+function getHandHistory() {
+    fetch('/table/get-hand-history', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+            alert(error.message);
+        });
+    //get player id
+    //go to table,filter and retrieve hands by player id
+    //call function that displays last 100 hand history in a table
 }
 
 async function onChangeUsername() {
@@ -164,7 +185,7 @@ async function fetchHomePage() {
     }
 }
 
-
+handHistory.addEventListener('click', getHandHistory);
 changeUsernameButton.addEventListener('click', displayChangeUsernameForm);
 changePasswordButton.addEventListener('click', displayChangePasswordForm);
 deleteAccountButton.addEventListener('click', displayDeleteAccountForm);

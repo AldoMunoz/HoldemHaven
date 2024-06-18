@@ -124,6 +124,10 @@ public class UTHTableService implements TableGameService {
         }
     }
 
+    public ArrayList<DBHand> getHandHistory(UTHTable UTHTable, Long playerId) {
+        return null;
+    }
+
     private String boardCardsToString(ArrayList<Card> cards) {
         StringBuilder result = new StringBuilder();
 

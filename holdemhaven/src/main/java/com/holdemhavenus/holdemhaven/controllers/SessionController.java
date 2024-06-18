@@ -22,6 +22,7 @@ public class SessionController {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("username", session.getAttribute("username"));
         attributes.put("accountBalance", session.getAttribute("accountBalance"));
+        attributes.put("playerId", session.getAttribute("playerId"));
 
         return attributes;
     }

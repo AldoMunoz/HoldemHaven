@@ -6,13 +6,14 @@ import com.holdemhavenus.holdemhaven.requestDTOs.PlayerActionRequest;
 import com.holdemhavenus.holdemhaven.requestDTOs.SaveHandRequest;
 import com.holdemhavenus.holdemhaven.responseDTOs.*;
 import com.holdemhavenus.holdemhaven.services.UTHTableService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/table")
 @SessionAttributes("table")
-public class TableController {
+public class UTHTableController {
     @Autowired
     private UTHTableService UTHTableService;
 
@@ -64,5 +65,11 @@ public class TableController {
     @PostMapping("/end-hand")
     public void endHand(@ModelAttribute("table") UTHTable UTHTable) {
         UTHTableService.endHand(UTHTable);
+    }
+
+    @PostMapping("/table/get-hand-history")
+    public void getHandHistory(@ModelAttribute("table") UTHTable UTHTable, HttpSession session) {
+        System.out.println(session.getAttribute("playerId"));
+        //UTHTableService.getHandHistory(UTHTable, session.getAttribute("playerId"));
     }
 }

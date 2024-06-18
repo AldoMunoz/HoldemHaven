@@ -87,7 +87,7 @@ public class PlayerService {
 
 
         if(player != null && passwordEncoder.matches(request.getPassword(), player.getPassword())) {
-            return new LoginPlayerResponse(true, "Success. You are now logged in.", player.getUsername(), player.getAccountBalance());
+            return new LoginPlayerResponse(true, "Success. You are now logged in.", player.getUsername(), player.getAccountBalance(), player.getId());
         }
 
         return new LoginPlayerResponse(false, "Unsuccessful login. Try again.");

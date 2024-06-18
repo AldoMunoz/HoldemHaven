@@ -29,6 +29,7 @@ public class PlayerController {
         if(response.isSuccess()) {
             session.setAttribute("username", response.getPlayerUsername());
             session.setAttribute("accountBalance", response.getAccountBalance());
+            session.setAttribute("playerId", response.getPlayerId());
             System.out.println("success session attributes");
         }
         return response;
