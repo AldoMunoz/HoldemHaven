@@ -38,19 +38,22 @@ public class TableController {
 
     @PostMapping("/player-action")
     public PlayerActionResponse playerAction(@ModelAttribute("table") UTHTable UTHTable, @RequestBody PlayerActionRequest request) {
-        System.out.println(request.getAction());
-        System.out.println(request.getBetAmount());
         return UTHTableService.playerAction(UTHTable, request);
+    }
+
+    @PostMapping("/fold-player-action")
+    public FoldPlayerActionResponse foldPlayerAction(@ModelAttribute("table") UTHTable UTHTable, @RequestBody PlayerActionRequest request) {
+        PlayerActionResponse paResponse = UTHTableService.playerAction(UTHTable, request);
+        ShowdownResponse sResponse = UTHTableService.showdown(UTHTable);
+
+
+        return new FoldPlayerActionResponse(paResponse.isSuccess(), paResponse.getMessage(), paResponse.getDealerHoleCards(),
+                sResponse.getWinner(), sResponse.getPlayerHandRanking(), sResponse.getDealerHandRanking(), sResponse.getPlayerHandToString(), sResponse.getDealerHandToString());
     }
 
     @PostMapping("/showdown")
     public ShowdownResponse showdown(@ModelAttribute("table") UTHTable UTHTable) {
         return UTHTableService.showdown(UTHTable);
-    }
-
-    @PostMapping("/get-dealer-hand")
-    public GetDealerHandResponse getDealerHand(@ModelAttribute("table") UTHTable UTHTable) {
-        return UTHTableService.getDealerHand(UTHTable);
     }
 
     @PostMapping("/save-hand")

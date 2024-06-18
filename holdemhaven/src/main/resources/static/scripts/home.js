@@ -767,14 +767,16 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
 
-    //calls Table Service function playerAction, with data for when a user folds their hand
+    //calls Table Service method getDealerHand for when the player folds
     function foldHand() {
+        document.querySelector('.button-container').style.display = 'none';
+
         const playerActionRequest = {
             action: 'F',
             betAmount: 0
         }
 
-        fetch('/table/player-action', {
+        fetch('/table/fold-player-action', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -783,40 +785,38 @@ document.addEventListener("DOMContentLoaded", function() {
         })
             .then(response => response.json())
             .then(data => {
-               //if the request is successful, commence fold hand sequence
-                if(data.success) {
-                    document.querySelector('.button-container').style.display = 'none';
-                    //calls function to retrieve the dealer's hand ranking
-                    getDealerHand();
-                }
-                else {
-                    alert(data.message);
-                }
+                //reveal the dealer hole cards
+                revealDealerHoleCards(data.dealerHoleCards);
+                //display the dealer's hand ranking
+                displayDealerHand(data.dealerHandToString);
+                //determine trips bet payout after player folds
+                determineFoldPayout(data.playerHandRanking);
             })
             .catch(error => {
                 alert(error.message);
             });
     }
 
-    //calls Table Service method getDealerHand for when the player folds
-    function getDealerHand() {
-        fetch('/table/get-dealer-hand', {
+    function determineFoldPayout(playerHandRanking) {
+        const foldPayoutRequest = {
+            tripsBetAmount: tripsBetAmount,
+            playerHandRanking: playerHandRanking
+        }
+
+        fetch('/api/foldPayout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify(foldPayoutRequest)
         })
             .then(response => response.json())
             .then(data => {
-                //reveal the dealer hole cards
-                revealDealerHoleCards(data.dealerHoleCards);
-                //display the dealer's hand ranking
-                displayDealerHand(data.dealerHandToString);
                 //send info to save hand data in the database
-                //TODO saveHandData(data.playerId, d, 0);
+                saveHandData(data.playerId, 'd', data.totalPayout);
                 //display the end hand message after timeout
                 setTimeout(() => {
-                    displayEndHandMessage(0);
+                    displayEndHandMessage(data.totalPayout);
                 }, 2000);
             })
             .catch(error => {

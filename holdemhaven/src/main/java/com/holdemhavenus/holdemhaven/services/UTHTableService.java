@@ -74,16 +74,6 @@ public class UTHTableService implements TableGameService {
     }
 
     @Override
-    public GetDealerHandResponse getDealerHand(UTHTable UTHTable) {
-        HandService handService = new HandService();
-
-        Hand dealerHand = new Hand(UTHTable.getDealerHoleCards(), UTHTable.getBoard());
-        HandRanking dealerHandRanking = handService.findHandRanking(dealerHand);
-
-        return new GetDealerHandResponse(UTHTable.getDealerHoleCards(), handService.toString(dealerHand.getFiveCardHand(), dealerHandRanking));
-    }
-
-    @Override
     public void endHand(UTHTable UTHTable) {
         UTHTable.getDeckService().joinDeck(UTHTable.getDeck());
         UTHTable.getBoard().clear();
@@ -211,7 +201,8 @@ public class UTHTableService implements TableGameService {
             response.setMessage("Successful runout.");
             return response;
         }
-        else if (request.getAction() == 'F') {
+        else if(request.getAction() == 'F') {
+            response.setDealerHoleCards(UTHTable.getDealerHoleCards());
             response.setSuccess(true);
             response.setMessage("Folded hand.");
 

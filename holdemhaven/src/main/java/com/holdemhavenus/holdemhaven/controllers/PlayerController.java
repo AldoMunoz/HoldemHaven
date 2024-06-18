@@ -134,7 +134,7 @@ public class PlayerController {
     }
 
     @PostMapping("/payout")
-    private PayoutResponse payout(@RequestBody PayoutRequest payoutRequest, HttpSession session) {
+    public PayoutResponse payout(@RequestBody PayoutRequest payoutRequest, HttpSession session) {
         String playerUsername = getUsername(session);
 
         if(playerUsername == null) {
@@ -143,6 +143,22 @@ public class PlayerController {
 
         PayoutResponse response = playerService.determinePayout(payoutRequest, playerUsername);
         if(response.isSuccess())
+            session.setAttribute("accountBalance", response.getAccountBalance());
+
+        return response;
+    }
+
+    @PostMapping("/foldPayout")
+    public PayoutResponse foldPayout(@RequestBody FoldPayoutRequest request, HttpSession session) {
+        String playerUsername = getUsername(session);
+
+        if(playerUsername == null) {
+            return new PayoutResponse(false, "User not logged in or session expired.");
+        }
+
+        PayoutResponse response = playerService.determineFoldPayout(request, playerUsername);
+
+        if(response.isSuccess() && response.getAccountBalance() != null)
             session.setAttribute("accountBalance", response.getAccountBalance());
 
         return response;

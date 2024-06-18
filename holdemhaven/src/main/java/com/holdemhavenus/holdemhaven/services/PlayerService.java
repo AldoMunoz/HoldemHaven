@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Formatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -227,7 +228,7 @@ public class PlayerService {
         if(player != null) {
             BigDecimal antePayout = antePayout(request);
             BigDecimal dealerPayout = dealerPayout(request);
-            BigDecimal tripsPayout = tripsPayout(request);
+            BigDecimal tripsPayout = tripsPayout(request.getPlayerHandRanking(), request.getTripsBetAmount());
             BigDecimal playPayout = playPayout(request);
 
             BigDecimal payoutSum = antePayout.add(dealerPayout).add(tripsPayout).add(playPayout);
@@ -240,6 +241,26 @@ public class PlayerService {
         else {
             return new PayoutResponse(false, "Error, player not logged in");
         }
+    }
+
+    public PayoutResponse determineFoldPayout(FoldPayoutRequest request, String username) {
+        Player player = playerRepository.findByUsername(username);
+
+        if(request.getTripsBetAmount().compareTo(BigDecimal.valueOf(0)) == 0) return new PayoutResponse(true, "No trips bet.", player.getId(), BigDecimal.valueOf(0));
+        else if(player != null) {
+            BigDecimal tripsPayout = tripsPayout(request.getPlayerHandRanking(), request.getTripsBetAmount());
+
+            if(!tripsPayout.equals(BigDecimal.valueOf(0))) {
+                player.setAccountBalance(player.getAccountBalance().add(tripsPayout));
+                playerRepository.save(player);
+
+                return new PayoutResponse(true, "Successful payout.", player.getId(), player.getAccountBalance(), tripsPayout);
+            }
+            else {
+                return new PayoutResponse(true, "No payout.", player.getId(), BigDecimal.valueOf(0));
+            }
+        }
+        else return new PayoutResponse(false, "Error, player not logged in");
     }
 
     private BigDecimal antePayout(PayoutRequest request) {
@@ -265,15 +286,15 @@ public class PlayerService {
         }
         return BigDecimal.valueOf(0);
     }
-    private BigDecimal tripsPayout(PayoutRequest request) {
-        if(request.getPlayerHandRanking() <= 2) return BigDecimal.valueOf(0);
-        else if (request.getPlayerHandRanking() == 3) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(4));
-        else if (request.getPlayerHandRanking() == 4) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(5));
-        else if (request.getPlayerHandRanking() == 5) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(8));
-        else if (request.getPlayerHandRanking() == 6) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(9));
-        else if (request.getPlayerHandRanking() == 7) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(31));
-        else if (request.getPlayerHandRanking() == 8) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(41));
-        else if (request.getPlayerHandRanking() == 9) return request.getTripsBetAmount().multiply(BigDecimal.valueOf(51));
+    private BigDecimal tripsPayout(int playerHandRanking, BigDecimal tripsBetAmount) {
+        if(playerHandRanking <= 2) return BigDecimal.valueOf(0);
+        else if (playerHandRanking == 3) return tripsBetAmount.multiply(BigDecimal.valueOf(4));
+        else if (playerHandRanking == 4) return tripsBetAmount.multiply(BigDecimal.valueOf(5));
+        else if (playerHandRanking == 5) return tripsBetAmount.multiply(BigDecimal.valueOf(8));
+        else if (playerHandRanking == 6) return tripsBetAmount.multiply(BigDecimal.valueOf(9));
+        else if (playerHandRanking == 7) return tripsBetAmount.multiply(BigDecimal.valueOf(31));
+        else if (playerHandRanking == 8) return tripsBetAmount.multiply(BigDecimal.valueOf(41));
+        else if (playerHandRanking == 9) return tripsBetAmount.multiply(BigDecimal.valueOf(51));
 
         return BigDecimal.valueOf(0);
     }

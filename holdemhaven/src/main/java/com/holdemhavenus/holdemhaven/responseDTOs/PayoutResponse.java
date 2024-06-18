@@ -30,4 +30,17 @@ public class PayoutResponse extends BaseResponse {
         this.playPayout  = playPayout;
         this.totalPayout = totalPayout;
     }
+
+    public PayoutResponse(boolean isSuccess, String message, Long playerId, BigDecimal accountBalance, BigDecimal totalPayout) {
+        super(isSuccess, message);
+        this.playerId = playerId;
+        this.accountBalance = accountBalance;
+        this.totalPayout = totalPayout;
+    }
+
+    public PayoutResponse(boolean isSuccess, String message, Long playerId, BigDecimal totalPayout) {
+        super(isSuccess, message);
+        this.playerId = playerId;
+        this.totalPayout = totalPayout;
+    }
 }
