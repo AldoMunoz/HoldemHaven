@@ -1,13 +1,10 @@
-const depositButton = document.getElementById('depositButton');
-const withdrawButton = document.getElementById('withdrawButton');
+//constants for page elements that are frequently accessed
 const depositForm = document.getElementById('depositForm');
 const withdrawForm = document.getElementById('withdrawForm');
 const depositInfo = document.getElementById('depositInfo');
 const withdrawInfo = document.getElementById('withdrawInfo');
-const submitDepositButton = document.getElementById('submitDepositButton ');
-const submitWithdrawalButton = document.getElementById('submitWithdrawalButton');
-const homeButton = document.getElementById("homeButton");
 
+//hide any visible divs and display the deposit form and accompanying information
 function displayDepositForm() {
     withdrawForm.style.display = 'none';
     withdrawInfo.style.display = 'none';
@@ -15,6 +12,8 @@ function displayDepositForm() {
     depositForm.style.display = 'block';
     depositInfo.style.display = 'block';
 }
+
+//hide any visible divs and display the withdrawal form and accompanying information
 function displayWithdrawForm() {
     depositForm.style.display = 'none';
     depositInfo.style.display = 'none';
@@ -22,14 +21,18 @@ function displayWithdrawForm() {
     withdrawForm.style.display = 'block';
     withdrawInfo.style.display = 'block';
 }
+
+//after user submits deposit form, send request to update balance
 function onSubmitDeposit() {
     const depositAmount = document.getElementById('depositAmount').value;
 
+    //if the user did not enter a number, alert the user
     if (!depositAmount) {
         alert('Please enter a deposit amount.');
         return;
     }
 
+    //create response DTO
     const moneyTransferRequest = {
         requestType: "DEPOSIT",
         amount: depositAmount
@@ -44,9 +47,12 @@ function onSubmitDeposit() {
     })
         .then(response => response.json())
         .then(data => {
+            //if deposit was successful, alert the user
             if (data.success) {
                 alert('Deposit successful');
-            } else {
+            }
+            //else alert the user with what went wrong
+            else {
                 alert('Deposit failed: ' + data.message);
             }
         })
@@ -56,14 +62,17 @@ function onSubmitDeposit() {
         });
 }
 
+//after user submits withdrawal form, send request to update balance
 function onSubmitWithdrawal() {
     const withdrawAmount = document.getElementById('withdrawAmount').value;
 
+    //if the user did not enter a number, alert the user
     if (!withdrawAmount) {
         alert('Please enter a withdraw amount.');
         return;
     }
 
+    //create response DTO
     const moneyTransferRequest = {
         requestType: "WITHDRAW",
         amount: withdrawAmount
@@ -78,19 +87,22 @@ function onSubmitWithdrawal() {
     })
         .then(response => response.json())
         .then(data => {
-            console.log("Data received:", data);
+            //if withdrawal was successful, alert the user
             if (data.success) {
                 alert('Withdraw successful');
-            } else {
+            }
+            //else alert the user with what went wrong
+            else {
                 alert('Withdraw failed: ' + data.message);
             }
         })
         .catch(error => {
             console.error("Fetch error:", error);
-            //alert(error.message);
+            alert(error.message);
         });
 }
 
+//fetch username and account balance session attributes and display them in the navbar
 async function fetchSessionAttributes() {
     try {
         const response = await fetch("/get-player-info");
@@ -108,6 +120,7 @@ async function fetchSessionAttributes() {
     }
 }
 
+//redirect user back to the home page
 async function fetchHomePage() {
     try {
         const response = await fetch("/home");
@@ -123,10 +136,10 @@ async function fetchHomePage() {
     }
 }
 
-depositButton.addEventListener('click', displayDepositForm);
-withdrawButton.addEventListener('click', displayWithdrawForm);
-submitDepositButton.addEventListener('click', onSubmitDeposit);
-submitWithdrawalButton.addEventListener('click', onSubmitWithdrawal);
-homeButton.addEventListener('click', fetchHomePage);
-//Get username and chipCount when user opens the page
+//event listeners for all the buttons on the page
+document.getElementById('depositButton').addEventListener('click', displayDepositForm);
+document.getElementById('withdrawButton').addEventListener('click', displayWithdrawForm);
+document.getElementById('submitDepositButton').addEventListener('click', onSubmitDeposit);
+document.getElementById('submitWithdrawalButton').addEventListener('click', onSubmitWithdrawal);
+document.getElementById('homeButton').addEventListener('click', fetchHomePage);
 window.onload = fetchSessionAttributes;

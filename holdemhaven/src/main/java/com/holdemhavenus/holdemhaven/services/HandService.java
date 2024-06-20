@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @Service
+//service class used for handling the functionality of poker hands.
 public class HandService {
     public HandRanking findHandRanking(Hand hand) {
         //Creates array of cards, adds player cards and community cards to the array

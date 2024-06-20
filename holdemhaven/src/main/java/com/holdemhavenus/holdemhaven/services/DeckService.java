@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
+//Service class used for handling actions related to the card deck.
 public class DeckService {
     //removes the card from the deck and moves it to the "dead" deck
     public Card drawCard(Deck deck) {
@@ -19,7 +20,7 @@ public class DeckService {
         Collections.shuffle(deck.getCards());
     }
 
-    //joins the deck with the deadCards after hand is over
+    //joins the deck with the dead cards after hand is over
     public void joinDeck (Deck deck) {
         deck.getCards().addAll(deck.getDeadCards());
         deck.getDeadCards().removeAll(deck.getCards());

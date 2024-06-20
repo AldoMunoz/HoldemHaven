@@ -1,16 +1,10 @@
-const homeButton = document.getElementById("homeButton");
-const handHistory = document.getElementById('handHistory');
-const changeUsernameButton = document.getElementById('changeUsernameButton');
-const changePasswordButton = document.getElementById('changePasswordButton');
-const deleteAccountButton = document.getElementById('deleteAccountButton');
+//constants for page elements that are frequently accessed
 const handHistoryTable = document.getElementById('handHistoryTable');
 const changeUsernameForm = document.getElementById('changeUsernameForm');
 const changePasswordForm = document.getElementById('changePasswordForm');
 const deleteAccountForm = document.getElementById('deleteAccountForm');
-const submitChangeUsernameButton = document.getElementById('submitChangeUsernameButton');
-const submitChangePasswordButton = document.getElementById('submitChangePasswordButton');
-const submitDeleteAccountButton = document.getElementById('submitDeleteAccountButton');
 
+//hide other divs and display change username form
 function displayChangeUsernameForm() {
     changePasswordForm.style.display = 'none';
     deleteAccountForm.style.display = 'none';
@@ -19,6 +13,7 @@ function displayChangeUsernameForm() {
     changeUsernameForm.style.display = 'block';
 }
 
+//hide other divs and display change password form
 function displayChangePasswordForm() {
     changeUsernameForm.style.display = 'none';
     deleteAccountForm.style.display = 'none';
@@ -27,6 +22,8 @@ function displayChangePasswordForm() {
     changePasswordForm.style.display = 'block';
 }
 
+
+//hide other divs and display delete account form
 function displayDeleteAccountForm() {
     changeUsernameForm.style.display = 'none';
     changePasswordForm.style.display = 'none';
@@ -35,6 +32,7 @@ function displayDeleteAccountForm() {
     deleteAccountForm.style.display = 'block';
 }
 
+//fetch hand history from the repository
 function getHandHistory() {
     fetch('/table/get-hand-history', {
         method: 'POST',
@@ -50,11 +48,9 @@ function getHandHistory() {
             console.error("Fetch error:", error);
             alert(error.message);
         });
-    //get player id
-    //go to table,filter and retrieve hands by player id
-    //call function that displays last 100 hand history in a table
 }
 
+//hide other divs and display hand history data
 function displayHandHistory(data) {
     changePasswordForm.style.display = 'none';
     deleteAccountForm.style.display = 'none';
@@ -85,6 +81,7 @@ function displayHandHistory(data) {
     handHistoryTable.style.display = 'block';
 }
 
+//after user submits change username form, send request to apply change in the backend
 async function onChangeUsername() {
     const newUsername = document.getElementById('newUsername').value;
 
@@ -97,10 +94,14 @@ async function onChangeUsername() {
     })
         .then(response => response.json())
         .then(data => {
+            //if change was accepted:
             if (data.success) {
+                //display an alert and change the username in the navbar
                 alert('Successfully changed username.');
                 document.getElementById('username').textContent = data.username;
-            } else {
+            }
+            //else display error alert
+            else {
                 alert('Username change failed: ' + data.message);
             }
         })
@@ -110,7 +111,9 @@ async function onChangeUsername() {
         });
 }
 
+//after user submits change password form, send request to apply change in the backend
 function onChangePassword() {
+    //create change password request DTO
     const changePasswordRequest = {
         currentPassword: document.getElementById('currentPassword').value,
         newPassword: document.getElementById('newPassword').value,
@@ -153,6 +156,7 @@ function onChangePassword() {
         });
 }
 
+//after user submits delete account form, send request to apply change in the backend
 function onDeleteAccount() {
     fetch('/player/delete-account', {
         method: 'POST',
@@ -162,6 +166,7 @@ function onDeleteAccount() {
     })
         .then(response => response.json())
         .then(async data => {
+            //if success, alert the user, log them out, and redirect them to the home page
             if (data.success) {
                 alert('Account deleted.');
 
@@ -179,7 +184,6 @@ function onDeleteAccount() {
                 } catch (error) {
                     console.log("Error: ", error);
                 }
-                //TODO redirect to home page and log out
             } else {
                 alert('Delete account failed: ' + data.message);
             }
@@ -189,6 +193,8 @@ function onDeleteAccount() {
             alert(error.message);
         });
 }
+
+//fetch username and account balance session attributes and display them in the navbar
 async function fetchSessionAttributes() {
     try {
         const response = await fetch("/get-player-info");
@@ -206,6 +212,7 @@ async function fetchSessionAttributes() {
     }
 }
 
+//redirect user back to the home page
 async function fetchHomePage() {
     try {
         const response = await fetch("/home");
@@ -222,12 +229,13 @@ async function fetchHomePage() {
     }
 }
 
-handHistory.addEventListener('click', getHandHistory);
-changeUsernameButton.addEventListener('click', displayChangeUsernameForm);
-changePasswordButton.addEventListener('click', displayChangePasswordForm);
-deleteAccountButton.addEventListener('click', displayDeleteAccountForm);
-submitChangeUsernameButton.addEventListener('click', onChangeUsername);
-submitChangePasswordButton.addEventListener('click', onChangePassword);
-submitDeleteAccountButton.addEventListener('click', onDeleteAccount);
-homeButton.addEventListener('click', fetchHomePage);
+//event listeners for all the buttons on the page
+document.getElementById("homeButton").addEventListener('click', fetchHomePage);
+document.getElementById("handHistory").addEventListener('click', getHandHistory);
+document.getElementById("changeUsernameButton").addEventListener('click', displayChangeUsernameForm);
+document.getElementById("changePasswordButton").addEventListener('click', displayChangePasswordForm);
+document.getElementById("deleteAccountButton").addEventListener('click', displayDeleteAccountForm);
+document.getElementById("submitChangeUsernameButton").addEventListener('click', onChangeUsername);
+document.getElementById("submitChangePasswordButton").addEventListener('click', onChangePassword);
+document.getElementById("submitDeleteAccountButton").addEventListener('click', onDeleteAccount);
 window.onload = fetchSessionAttributes;

@@ -1,22 +1,12 @@
-//References to DOM elements
-const signInButton = document.getElementById('signInButton');
-const signInModalBtn = document.getElementById('signInModalBtn');
-const signInForm = document.getElementById('signInForm');
-const registerForm = document.getElementById('registerForm');
-const registerModalBtn = document.getElementById('registerModalBtn');
-const registerButton = document.getElementById('registerButton');
-const cashierButton = document.getElementById('cashierButton');
-const accountButton = document.getElementById('accountButton');
-const logOutButton = document.getElementById('logOutButton');
-const playNowButton = document.getElementById('playNowButton');
-
 document.addEventListener("DOMContentLoaded", function() {
+    //constants for page elements that are frequently accessed
     const chips = document.querySelectorAll(".chip");
     const anteArea = document.getElementById("ante-area");
     const dealerArea = document.getElementById("dealer-area");
     const tripsArea = document.getElementById("trips-area");
     const playArea = document.getElementById('play-area');
 
+    //variables for game functionality
     let anteBetAmount = 0;
     let tripsBetAmount = 0;
     let playBetAmount = 0;
@@ -74,10 +64,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     //logic for placing chips on the dealer and ante areas
     function placeMainBet(src) {
+        //remove any chips currectly placed in ante or dealer area
         while(anteArea.firstChild ) {
             anteArea.removeChild(anteArea.firstChild);
             dealerArea.removeChild(dealerArea.firstChild);
         }
+
+        //add and append image to both areas
         const anteChip = document.createElement("img");
         anteChip.src = src;
         anteChip.classList.add("placed-chip");
@@ -89,16 +82,18 @@ document.addEventListener("DOMContentLoaded", function() {
         anteArea.appendChild(anteChip);
         dealerArea.appendChild(dealerChip);
 
+        //save ante bet amount (which is always equal to dealer bet amount)
         anteBetAmount = Number(selectedChipValue);
-        console.log(anteBetAmount);
     }
 
     //logic for placing chip on trips area
     function placeTripsBet(src) {
-        // Remove any existing chip in the area
+        //remove any existing chip in the area
         while (tripsArea.firstChild) {
             tripsArea.removeChild(tripsArea.firstChild);
         }
+
+        //add and append image to trips area
         const chip = document.createElement("img");
         chip.src = src;
         chip.classList.add("placed-chip");
@@ -146,6 +141,7 @@ document.addEventListener("DOMContentLoaded", function() {
         anteArea.innerHTML = '';
         dealerArea.innerHTML = '';
 
+        //unhighlight the bet areas
         tripsArea.classList.remove('no-border');
         tripsArea.style.display = 'none';
 
@@ -173,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function() {
             tripsBetAmount: tripsBetAmount
         }
 
-        //verify the bet is valid
+        //send request to verify if the bet is valid
         fetch('/player/verify-bet', {
             method: 'POST',
             headers: {
@@ -183,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function() {
         })
             .then(response => response.json())
             .then(data => {
-                console.log("Verify Bet Data: ", data);
+                //if response is successful:
                 if(data.success) {
                     //update account balance
                     document.getElementById('balanceDisplay').textContent = data.accountBalance;
@@ -191,6 +187,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     //deal cards
                     dealCards();
                 }
+                //else display error message in an alert
                 else {
                     alert(data.message);
                 }
@@ -202,13 +199,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     //logic to deal player and dealer hole cards
     function dealCards() {
-        //call Table Service to deal hands
+        //send request to deal hole cards
         fetch('/table/deal-hand', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-
             body: JSON.stringify({})
         })
             .then(response => {
@@ -335,13 +331,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 if(data.success) {
                     //update player account balance
                     document.getElementById('balanceDisplay').textContent = data.accountBalance;
-                    //set play bet Amount
+                    //set play bet amount
                     playBetAmount = anteBetAmount*betMultiplier;
                     //display chips in front-end
                     displayPlayBet(betMultiplier);
                     //hide button container
                     document.querySelector('.button-container').style.display = 'none';
-
+                    //place the play bet in the UI
                     placePlayBet(playBetAmount);
                 }
                 else {
@@ -370,8 +366,8 @@ document.addEventListener("DOMContentLoaded", function() {
         })
             .then(response => response.json())
             .then(data => {
+                //if the request is successful:
                 if(data.success) {
-                    console.log("RIGHER", data);
                     //reveal the rest of the board, hole cards, and hand result, with timeout for dramatic effect
                     const timeouts = runOutBoard(data.boardCards, data.street);
                     setTimeout(() => {
@@ -391,6 +387,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     //runout and display the rest of the board, depending on the current street
+    //returns two numbers, representing how much time elapse between UI events
     function runOutBoard(cards, street) {
         //if pre-flop, runout the flop and then the turn and river
         if(street === "f") {
@@ -405,6 +402,7 @@ document.addEventListener("DOMContentLoaded", function() {
             dealTurnAndRiver(cards);
             return {timeout1: 2000, timeout2: 4000}
         }
+        //if river, return timeout variables
         else if(street === "e") {
             return { timeout1: 0, timeout2: 2000}
         }
@@ -497,8 +495,6 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 //if payout determination is successful:
                 if(data.success) {
-                    console.log("HERE", data);
-
                     //display the dealer's hand
                     displayDealerHand(dealerHandToString);
                     //display the player's hand and the payout details
@@ -570,6 +566,7 @@ document.addEventListener("DOMContentLoaded", function() {
         playerHandContainer.style.display = 'flex';
     }
 
+    //sends request to Table Service to save hand data in the hand repository
     function saveHandData(playerId, winner, playerPayout) {
         const saveHandRequest = {
             playerId: playerId,
@@ -589,10 +586,8 @@ document.addEventListener("DOMContentLoaded", function() {
         })
             .then(response => response.json())
             .then(data => {
-                if(data.success) {
-                    console.log(data.message);
-                }
-                else {
+                //if request is unsuccessful, display an alert, else do nothing
+                if(!data.success) {
                     alert(data.message);
                 }
             })
@@ -600,7 +595,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 alert(error.message);
             });
     }
-
 
     //displays message with how much the user won
     //displays button that clears the table and starts the next hand
@@ -622,6 +616,7 @@ document.addEventListener("DOMContentLoaded", function() {
             `
         }
 
+        //add event listener to end hand button, and display the div
         document.getElementById("end-hand-button").addEventListener('click', endHand);
         handSummaryContainer.style.display = 'flex';
     }
@@ -747,12 +742,12 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 //if the request is successful, display the next street accordingly
                 if(data.success) {
-                    //if flop do flop action function call
+                    //if flop, do flop action function call
                     if(data.street === 'f') {
                         dealFlop(data.boardCards);
                         displayFlopBettingOptions();
                     }
-                    //if river do river action function call
+                    //if river, do river action function call
                     else if(data.street === 'r') {
                         dealTurnAndRiver(data.boardCards);
                         displayRiverBettingOptions();
@@ -767,7 +762,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
 
-    //calls Table Service method getDealerHand for when the player folds
+    //calls Table Service methods for when the player folds
     function foldHand() {
         document.querySelector('.button-container').style.display = 'none';
 
@@ -797,6 +792,8 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
 
+    //sends request to Player Service determinePayout
+    //checks edge case for when a player folds trips or better after placing a tripsBet
     function determineFoldPayout(playerHandRanking) {
         const foldPayoutRequest = {
             tripsBetAmount: tripsBetAmount,
@@ -824,18 +821,18 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
 
-
-    //add event listener to the deal and clear buttons
+    //event listeners for the deal and clear buttons
     document.getElementById('deal-button').addEventListener('click', dealHand);
     document.getElementById('clear-button').addEventListener('click', clearBets);
 });
 
-//fetches the session ID
+//fetches the player's username and account balance from session attributes
 async function fetchSessionInformation() {
     try {
         const response = await fetch("/get-player-info");
         if(response.ok) {
             const attributes = await response.json();
+            //if the user is logged in, update the UI to represent the user as logged in
             if(attributes.username != null && attributes.accountBalance != null) {
                 document.getElementById('usernameDisplay').textContent = attributes.username;
                 document.getElementById('balanceDisplay').textContent = attributes.accountBalance;
@@ -845,6 +842,7 @@ async function fetchSessionInformation() {
 
                 document.getElementById('playNowButton').removeAttribute('disabled');
             }
+            //else, update the UI to not logged in state
             else {
                 document.getElementById('loginContainer').style.display = 'block';
                 document.getElementById('userInfoContainer').style.setProperty('display', 'none', 'important');
@@ -859,19 +857,19 @@ async function fetchSessionInformation() {
     }
 }
 
-
 //opens sign-in modal
 function openSignInModal() {
     const signInModal = new bootstrap.Modal(document.getElementById('signInModal'));
     signInModal.show();
 }
+
 //opens register modal
 function openRegisterModal() {
     const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
     registerModal.show();
 }
 
-//handles sign-in form submission
+//sends request to sign player in
 function handleSignIn() {
     const loginPlayerRequest = {
         username: document.getElementById('username').value,
@@ -887,14 +885,15 @@ function handleSignIn() {
     })
         .then(response => response.json())
         .then(data => {
-            console.log("Data: ", data);
+            //if request is successful:
             if(data.success) {
+                //update the navbar to represent a logged in user
                 updateHeaderUponSignIn(data.playerUsername, data.accountBalance);
 
                 //resets form fields
-                signInForm.reset();
+                document.getElementById('signInForm').reset();
 
-                //hides the modal
+                //hides the sign-in modal
                 const signInModalElement = document.getElementById('signInModal');
                 const signInModal = bootstrap.Modal.getInstance(signInModalElement);
                 if (signInModal) {
@@ -903,6 +902,7 @@ function handleSignIn() {
                     console.error('Modal instance not found');
                 }
 
+                //enable the play now button
                 document.getElementById('playNowButton').removeAttribute('disabled');
             }
             else {
@@ -914,7 +914,7 @@ function handleSignIn() {
         });
 }
 
-//handles register form submission
+//sends request to register player
 function handleRegister() {
     const registerPlayerRequest = {
         firstName: document.getElementById('newFirstName').value,
@@ -934,17 +934,19 @@ function handleRegister() {
     })
         .then(response => response.json())
         .then(data => {
-            console.log("Data:", data);
+            //if the request is successful:
             if(data.success) {
                 //closes modal after sign-in
                 const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
                 registerModal.hide();
 
                 //resets form fields
-                registerForm.reset();
+                document.getElementById('registerForm').reset();
                 location.reload();
+                //alert the user and let them know they have successfully registered
                 alert(data.message);
             }
+            //else display error message telling user what they did wrong
             else {
                 alert(data.message);
             }
@@ -954,6 +956,7 @@ function handleRegister() {
         });
 }
 
+//fetches and opens the cashier page
 async function fetchCashierPage() {
     try {
         const response = await fetch("/cashier");
@@ -968,6 +971,8 @@ async function fetchCashierPage() {
     }
 }
 
+
+//fetches and opens the accounts page
 async function fetchAccountPage() {
     try {
         const response = await fetch("/account");
@@ -982,24 +987,20 @@ async function fetchAccountPage() {
     }
 }
 
-
+//after a user signs-in, update the UI to represent a signed-in user
 function updateHeaderUponSignIn(username, accountBalance) {
-    const loginContainer = document.getElementById('loginContainer');
-    const usernameDisplay = document.getElementById('usernameDisplay');
-    const balanceDisplay = document.getElementById('balanceDisplay');
-    const userInfoContainer = document.getElementById('userInfoContainer')
-
     //Update the username and balance
-    usernameDisplay.textContent = username;
-    balanceDisplay.textContent = accountBalance;
+    document.getElementById('usernameDisplay').textContent = username;
+    document.getElementById('balanceDisplay').textContent = accountBalance;
 
     //Hide login/register buttons
-    loginContainer.style.display = 'none';
+    document.getElementById('loginContainer').style.display = 'none';
 
     //Show user info
-    userInfoContainer.style.display = 'block';
+    document.getElementById('userInfoContainer').style.display = 'block';
 }
 
+//after a user signs-out, update the UI to represent a signed-out user
 async function handleLogOut() {
     try {
         const response = await fetch("/logout", {
@@ -1007,11 +1008,10 @@ async function handleLogOut() {
         });
         if (response.ok) {
            await response.json().catch(() => ({}));
-
-
+            //hide the game container
             document.getElementById('gameContainer').style.display = 'none';
             document.getElementById('startGameContainer').style.display = 'flex';
-
+            //reset the navbar
             document.getElementById('loginContainer').style.display = 'block';
             document.getElementById('userInfoContainer').style.setProperty('display', 'none', 'important');
             document.getElementById('playNowButton').setAttribute('disabled', true);
@@ -1024,20 +1024,20 @@ async function handleLogOut() {
     }
 }
 
+//displays the game container
 function openGame() {
     document.getElementById('startGameContainer').style.display = 'none';
     document.getElementById('gameContainer').style.display = 'block';
 }
 
-//Event listeners
-signInButton.addEventListener('click', openSignInModal);
-registerButton.addEventListener('click', openRegisterModal);
-signInModalBtn.addEventListener('click', handleSignIn);
-registerModalBtn.addEventListener('click', handleRegister);
-cashierButton.addEventListener('click', fetchCashierPage);
-accountButton.addEventListener('click', fetchAccountPage);
-logOutButton.addEventListener('click', handleLogOut);
-playNowButton.addEventListener('click', openGame);
-//Get session id when user opens the page
+//Event listeners for all the buttons on the page
+document.getElementById('signInButton').addEventListener('click', openSignInModal);
+document.getElementById('registerButton').addEventListener('click', openRegisterModal);
+document.getElementById('signInModalButton').addEventListener('click', handleSignIn);
+document.getElementById('registerModalButton').addEventListener('click', handleRegister);
+document.getElementById('cashierButton').addEventListener('click', fetchCashierPage);
+document.getElementById('accountButton').addEventListener('click', fetchAccountPage);
+document.getElementById('logOutButton').addEventListener('click', handleLogOut);
+document.getElementById('playNowButton').addEventListener('click', openGame);
 window.onload = fetchSessionInformation;
 

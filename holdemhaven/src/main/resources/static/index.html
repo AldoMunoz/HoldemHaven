@@ -7,14 +7,7 @@
     <link rel="stylesheet" href="/styles/homePageStyles.css">
 </head>
 <body>
-<!-- HAMBURGER MENU
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</nav>
--->
+<!-- Main Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Hold'em Haven</a>
@@ -25,22 +18,18 @@
                 <button class="btn btn-outline-primary" type="button" id="registerButton">Register</button>
             </div>
             <div id="userInfoContainer" class="d-flex align-items-center">
-                <!-- Username display -->
                 <div id="usernameContainer" class="navbar-text">
                     Welcome, <span id="usernameDisplay"></span>
                 </div>
                 <div id="balanceContainer" class="navbar-text ms-3">
                     Balance: $<span id="balanceDisplay"></span>
                 </div>
-                <!-- Cashier button -->
                 <div id="cashierButton">
                     <a href="/cashier.html" class="btn btn-primary ms-3">Cashier</a>
                 </div>
-                <!-- Account button -->
                 <div id="accountButton">
                     <a href="/account.html" class="btn btn-primary ms-3">Account</a>
                 </div>
-                <!-- Log out button -->
                 <div id="logOutButton">
                     <a class="btn btn-primary ms-3">Log Out</a>
                 </div>
@@ -72,7 +61,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="signInModalBtn">Sign In</button>
+                <button type="button" class="btn btn-primary" id="signInModalButton">Sign In</button>
             </div>
         </div>
     </div>
@@ -86,7 +75,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Sign In form -->
+                <!-- Register form -->
                 <form id="registerForm">
                     <div class="mb-3">
                         <label for="username" class="form-label">First Name</label>
@@ -116,12 +105,13 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="registerModalBtn">Sign In</button>
+                <button type="button" class="btn btn-primary" id="registerModalButton">Sign In</button>
             </div>
         </div>
     </div>
 </div>
-<!-- Centered container with title and button -->
+
+<!-- Game container -->
 <div class="center-container bg-light">
     <div id="startGameContainer" class="text-center">
         <h1>Ultimate Texas Hold'em</h1>
@@ -151,6 +141,7 @@
         </div>
     </div>
 </div>
+
 <!-- Footer -->
 <footer class="footer mt-auto py-3 bg-light">
     <div class="container text-center">
