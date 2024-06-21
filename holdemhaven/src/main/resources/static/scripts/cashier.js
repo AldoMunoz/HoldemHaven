@@ -50,6 +50,7 @@ function onSubmitDeposit() {
             //if deposit was successful, alert the user
             if (data.success) {
                 alert('Deposit successful');
+                document.getElementById('accountBalance').textContent = data.amount;
             }
             //else alert the user with what went wrong
             else {
@@ -90,6 +91,7 @@ function onSubmitWithdrawal() {
             //if withdrawal was successful, alert the user
             if (data.success) {
                 alert('Withdraw successful');
+                document.getElementById('accountBalance').textContent = data.amount;
             }
             //else alert the user with what went wrong
             else {
