@@ -255,7 +255,7 @@ document.addEventListener("DOMContentLoaded", function() {
     //deselect and hide the chips div
     function hideChips() {
         deselectChip();
-        document.querySelector('.chip-container').style.displalay = 'none';
+        document.querySelector('.chip-container').style.display = 'none';
     }
 
     //deselect the selected chip
@@ -648,7 +648,7 @@ document.addEventListener("DOMContentLoaded", function() {
     //clears and resets the front-end UI to its original state after the end of a hand
     function clearTable() {
         //display chips
-        document.querySelector('.chip-container').style.displalay = 'flex';
+        document.querySelector('.chip-container').style.display = 'flex';
 
         //reset all the bet containers
         document.getElementById('player-cards-container').innerHTML = '';
