@@ -1,29 +1,33 @@
-<strong>**DO NOT DISTRIBUTE OR PUBLICLY POST SOLUTIONS TO THESE LABS. MAKE ALL FORKS OF THIS REPOSITORY WITH SOLUTION CODE PRIVATE. PLEASE REFER TO THE STUDENT CODE OF CONDUCT AND ETHICAL EXPECTATIONS FOR COLLEGE OF INFORMATION TECHNOLOGY STUDENTS FOR SPECIFICS. **</strong>
-
-# WESTERN GOVERNOR UNIVERSITY 
+# Aldo Munoz - 007111031
+# WESTERN GOVERNOR UNIVERSITY
 ## D424 – SOFTWARE ENGINEERING CAPSTONE
-Welcome to Software Engineering Capstone! This is an opportunity for students to develop full stack software engineering documentation and applications. They will execute documentation, unit testing, revision of software applications, and deploy software applications with scripts and containers on a cloud platform.
 
-FOR SPECIFIC TASK INSTRUCTIONS AND REQUIREMENTS FOR THIS ASSESSMENT, PLEASE REFER TO THE COURSE PAGE.
-BASIC INSTRUCTIONS
-For this assessment, you will deploy your developed full stack software product to a web service of your choice.
+<strong>Hold'em Haven</strong>
+
+Hold'em Haven is an online platform that allows users to play the popular casino table game Ultimate Texas Hold'em. This README provides an overview of the project, setup instructions, and information on testing and usage.
 
 
-## SUPPLEMENTAL RESOURCES  
-1.	How to clone a project to IntelliJ using Git?
+## Overview
 
-> Ensure that you have Git installed on your system and that IntelliJ is installed using [Toolbox](https://www.jetbrains.com/toolbox-app/). Make sure that you are using version 2022.3.2. Once this has been confirmed, click the clone button and use the 'IntelliJ IDEA (HTTPS)' button. This will open IntelliJ with a prompt to clone the proejct. Save it in a safe location for the directory and press clone. IntelliJ will prompt you for your credentials. Enter in your WGU Credentials and the project will be cloned onto your local machine.  
+Hold'em Haven is a web-based application that simulates a casino game environment. Users can create accounts, deposit funds, play Ultimate Texas Hold'em, and view their game history. The platform provides a seamless and engaging experience for poker enthusiasts.
 
-2. How to create a branch and start Development?
+## Features
 
-- GitLab method
-> Press the '+' button located near your branch name. In the dropdown list, press the 'New branch' button. This will allow you to create a name for your branch. Once the branch has been named, you can select 'Create Branch' to push the branch to your repository.
+-User Registration and Authentication
+-Account Management
+-Fund Deposits and Withdrawals
+-Playing Ultimate Texas Hold'em
+-Viewing Game History
 
-- IntelliJ method
-> In IntelliJ, Go to the 'Git' button on the top toolbar. Select the new branch option and create a name for the branch. Make sure checkout branch is selected and press create. You can now add a commit message and push the new branch to the local repo.
+## Technologies Used
 
-## SUPPORT
-If you need additional support, please navigate to the course page and reach out to your course instructor.
+-Java and Spring Boot for backend development
+-Hibernate for ORM
+-JUnit and Mockito for unit testing
+-Bootstrap for responsive design
+-Maven for project management and build automation
 
-## FUTURE USE
-Take this opportunity to create or add to a simple resume portfolio to highlight and showcase your work for future use in career search, experience, and education!
+## Running the application
+
+After starting the application, navigate to http://localhost:8080 in your web browser. You will be greeted by the Hold'em Haven home page where you can sign up, log in, and start playing.
+
