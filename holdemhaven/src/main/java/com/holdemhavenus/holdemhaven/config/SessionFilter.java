@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.UUID;
 @Component
-public class SessionFilter implements Filter {
+public class  SessionFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}

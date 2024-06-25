@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class SessionController {
+public class  SessionController {
     @GetMapping("/get-player-info")
     public Map<String, Object> getPlayerInfo(HttpSession session) {
         Map<String, Object> attributes = new HashMap<>();
