@@ -1,6 +1,4 @@
-# Aldo Munoz - 007111031
-# WESTERN GOVERNOR UNIVERSITY
-## D424 – SOFTWARE ENGINEERING CAPSTONE
+# Aldo Munoz
 
 <strong>Hold'em Haven</strong>
 
